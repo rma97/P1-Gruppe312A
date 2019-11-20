@@ -1,7 +1,11 @@
 # LoadBalancer
-Liste med Git-commands
+### Liste med Git-commands
 
 https://dzone.com/articles/top-20-git-commands-with-examples
+
+### Lidt tricks til git
+
+https://about.gitlab.com/blog/2016/12/08/git-tips-and-tricks/#the-most-common-commands
 
 Her er de vigtigste commands(Tilføj gerne selv):
 
