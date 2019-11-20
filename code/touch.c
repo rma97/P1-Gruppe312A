@@ -1,1 +1,3 @@
-hej
+int main(void) {
+    while (true)
+}
