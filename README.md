@@ -22,5 +22,6 @@ git checkout [branch name] | This command is used to switch from one branch to a
 git merge [branch name] | This command merges the specified branch’s history into the current branch.
 git push origin master | This command sends the committed changes of master branch to your remote repository.
 git push origin [branch] | This command sends the branch commits to your remote repository.
+git pull origin load_balancer | This command pulls the branch commits to your local branch.
 git push –all origin | This command pushes all branches to your remote repository.
 git pull | This command fetches and merges changes on the remote server to your working directory.
