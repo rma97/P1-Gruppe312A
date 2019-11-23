@@ -19,6 +19,7 @@ git branch [branch name] | This command creates a new branch.
 git branch -D [branch name] | This command deletes the feature branch locally.
 git push origin --delete [branch name] | This command deletes the feature branch in the remote repository.
 git checkout [branch name] | This command is used to switch from one branch to another.
+git checkout [branch copying from] [file name] | Merging single file from other branch to current branch.
 git merge [branch name] | This command merges the specified branch’s history into the current branch.
 git push origin master | This command sends the committed changes of master branch to your remote repository.
 git push origin [branch] | This command sends the branch commits to your remote repository.
