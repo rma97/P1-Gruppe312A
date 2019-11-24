@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+void check(FILE *pointer);
+
 int main(void){
   int i, char_amount;
   char alphabet = 'a';
