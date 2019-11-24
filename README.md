@@ -26,3 +26,4 @@ git push origin [branch] | This command sends the branch commits to your remote
 git pull origin load_balancer | This command pulls the branch commits to your local branch.
 git push –all origin | This command pushes all branches to your remote repository.
 git pull | This command fetches and merges changes on the remote server to your working directory.
+git checkout --track origin/branch_name | Adds a tracking for a repository    
