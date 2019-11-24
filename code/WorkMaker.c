@@ -11,6 +11,7 @@ int main(void){
   scanf(" %d", &char_amount);
 
   workload = fopen("Workload.txt", "w");
+  check(workload);
 
   for (i = 1; i <= char_amount; i++){
     fputc(alphabet, workload);
@@ -23,4 +24,11 @@ int main(void){
   }
 
   return 0;
+}
+
+/* Checks if the file is opened correct */
+void check(FILE *pointer) {
+  if(pointer == NULL) {
+    printf("Error opening the file!");             
+  }
 }
