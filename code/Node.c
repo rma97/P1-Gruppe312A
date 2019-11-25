@@ -1,32 +1,12 @@
 #include <stdio.h>
-/* 
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
-
-int main(int argc, char* argv[]) {
-    expects at least 1 argument node number
-    if (argc > 1) {
-         open file
-        part with benchmark??
-        
-        while not EOF
-        getc to get workload
-
-        sleep 1/benchmark
-    } else {
-        printf("not enough program arguments");
-    }
-}
-*/
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
 
 void append_to_string(char *append_to, int number, int current_length);
 void wait_for(unsigned int secs);
+int find_number(char *string, int length_string);
 
 int main(int argc, char *argv[]){
   int benchmark, node;
@@ -34,7 +14,7 @@ int main(int argc, char *argv[]){
   char ch, file_string_r[] = "workload000.txt", file_string_w[] = "tasks000.txt";
 
   node      = (argv[1][0] - 48);
-  benchmark = (argv[2][0] - 48);
+  benchmark = find_number(argv[2], sizeof(argv[2])/sizeof(char);
   
   printf("This is node: %c it got %d parameters and the benchmark %s\n", argv[1][0], argc, argv[2]);
   
@@ -59,10 +39,18 @@ int main(int argc, char *argv[]){
   return 0;
 }
 
+int find_number(char *string, int length_string){
+  int i, num = 0;
+  for(i = 0; i < length_string; i++){
+    num += string[i] * pow(10, (length_string - i - 2));
+  }
+  return num;
+}
+
 /* from stackoverflow */
 void wait_for(unsigned int secs) {
   unsigned int retTime = time(0) + secs;
-  while (time(0) < retTime);            
+  while (time(0) < retTime);
 }
 
 void append_to_string(char *append_to, int number, int current_length){
