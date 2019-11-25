@@ -1,8 +1,5 @@
 #include <stdio.h>
-<<<<<<< HEAD
-=======
 /* 
->>>>>>> load_balancer
 #ifdef _WIN32
 #include <Windows.h>
 #else
@@ -10,21 +7,6 @@
 #endif
 
 int main(int argc, char* argv[]) {
-<<<<<<< HEAD
-    /* expects at least 1 argument node number*/
-    if (argc > 1) {
-        /* open file */
-        /* part with benchmark?? */
-        
-        /* while not EOF */
-        /* getc to get workload */
-
-        /* sleep 1/benchmark */
-    } else {
-        printf("not enough program arguments");
-    }
-}
-=======
     expects at least 1 argument node number
     if (argc > 1) {
          open file
@@ -92,4 +74,3 @@ void append_to_string(char *append_to, int number, int current_length){
   
   /*  printf("%s\n", append_to); */
 }
->>>>>>> load_balancer
