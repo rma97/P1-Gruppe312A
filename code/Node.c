@@ -3,9 +3,9 @@
 #include <time.h>
 #include <string.h>
 #include <math.h>
+#include <windows.h>
 
 void append_to_string(char *append_to, int number, int current_length);
-void wait_for(unsigned int secs);
 int find_number(char *string, int length_string);
 
 int main(int argc, char *argv[]){
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
   }
 
   while((ch = getc(fp_reader)) != EOF){
-    wait_for((10 / benchmark));
+    Sleep((int) (((double) 10/benchmark)*1000));
     printf("%c", ch);
     fprintf(fp_writer, "%d ", (int)(ch));
   }
@@ -45,12 +45,6 @@ int find_number(char *string, int length_string){
     num += string[i] * pow(10, (length_string - i - 2));
   }
   return num;
-}
-
-/* from stackoverflow */
-void wait_for(unsigned int secs) {
-  unsigned int retTime = time(0) + secs;
-  while (time(0) < retTime);
 }
 
 void append_to_string(char *append_to, int number, int current_length){
