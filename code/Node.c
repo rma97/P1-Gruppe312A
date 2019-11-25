@@ -14,7 +14,7 @@ int main(int argc, char *argv[]){
   char ch, file_string_r[] = "workload000.txt", file_string_w[] = "tasks000.txt";
 
   node      = (argv[1][0] - 48);
-  benchmark = find_number(argv[2], sizeof(argv[2])/sizeof(char);
+  benchmark = find_number(argv[2], sizeof(argv[2])/sizeof(char));
   
   printf("This is node: %c it got %d parameters and the benchmark %s\n", argv[1][0], argc, argv[2]);
   
