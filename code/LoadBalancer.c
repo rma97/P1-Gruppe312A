@@ -21,6 +21,11 @@ int main(void){
   printf("Hey, how many nodes, would you like to do the work for you? ");
   scanf(" %d", &num_nodes);
 
+  /* Writes number of nodes to file number_of_nodes.txt */
+  FILE *fp_non = fopen("number_of_nodes.txt", "w");
+  fprintf(fp_non, "%d", num_nodes);
+  fclose(fp_non);
+
   /* Assign memory for benchmarks. */
   benchmarks = malloc(num_nodes * sizeof(int));
   if(benchmarks == NULL){
