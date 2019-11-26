@@ -16,16 +16,17 @@ int main(void) {
   FILE *ptr_out = fopen("Output.txt.txt", "w");  
   check(ptr_non);
   check(ptr_out);
-  char temp = fgetc(ptr_non);
-
-  sscanf(&temp, " %d", &number_of_nodes);
+  char temp[50];
+  fgets(temp, 50, ptr_non);
+  
+  sscanf(temp, " %d", &number_of_nodes);
 
   fclose(ptr_non);
-  
-  printf("Combines the following files to Output.txt\n");
+
+  printf("I found %d number of files", number_of_nodes);
+  /* printf("Combines the following files to Output.txt\n"); */
 
   for(i = 1; i <= number_of_nodes; ++i) {
- 
     append_to_string(file_string_w, i, 5);
     printf("%s\n", file_string_w);
 
@@ -48,12 +49,9 @@ int main(void) {
 }
 
 void append_to_string(char *append_to, int number, int current_length){
-  /*  printf("This is the number %d\n", number);*/
-  append_to[current_length]     = (char)(number / 100 + 48);
-  append_to[current_length + 1] = (char)(number /  10 + 48);
-  append_to[current_length + 2] = (char)(number       + 48);
-  
-  /*  printf("%s\n", append_to); */
+  append_to[current_length]     = (char)((number / 100)                        + 48);
+  append_to[current_length + 1] = (char)((((number % 100) - number % 10) / 10) + 48);
+  append_to[current_length + 2] = (char)(number %  10                          + 48);
 }
 
 void check(FILE *pointer) {
