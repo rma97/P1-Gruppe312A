@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "WorkMaker.h"
 
 #define BIG_ENOUGH 1000
 
@@ -35,6 +36,7 @@ int main(void){
     exit(EXIT_FAILURE);
   }
   generate_benchmarks(benchmarks, num_nodes);
+  generate_workload();
   
   /* Start by opening the FILE from which to read. */
   fp_reader = fopen("workloads.txt", "r");
