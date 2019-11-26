@@ -24,7 +24,7 @@ int main(void){
       alphabet = 'a';
     }
   }
-
+  fclose(workload);
   return 0;
 }
 
