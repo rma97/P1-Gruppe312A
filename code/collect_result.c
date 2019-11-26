@@ -28,7 +28,7 @@ int main(void) {
 
   for(i = 1; i <= number_of_nodes; ++i) {
     append_to_string(file_string_w, i, 5);
-    printf("%s\n", file_string_w);
+    /* printf("%s\n", file_string_w); */
 
     FILE *ptr_task = fopen(file_string_w, "r");
     check(ptr_task);
