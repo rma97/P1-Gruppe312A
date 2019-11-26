@@ -24,8 +24,10 @@ int main(int argc, char *argv[]){
     exit(EXIT_FAILURE);
   }
 
+  printf("This is the benchmark. %d\n", benchmark);
+  
   while((ch = getc(fp_reader)) != EOF){
-    Sleep((int) (((double) 10/benchmark)*1000));
+    Sleep((int) (((double) 10/benchmark)*10));
     printf("%c", ch);
     fprintf(fp_writer, "%d ", (int)(ch));
   }
@@ -37,11 +39,7 @@ int main(int argc, char *argv[]){
 }
 
 int find_number(char *string, int length_string){
-  int i, num = 0;
-  for(i = 0; i < length_string; i++){
-    num += string[i] * pow(10, (length_string - i - 2));
-  }
-  return num;
+  return (int)(string[0] - 48);
 }
 
 void append_to_string(char *append_to, int number, int current_length){
@@ -50,6 +48,4 @@ void append_to_string(char *append_to, int number, int current_length){
   append_to[current_length]     = (char)(number / 100 + 48);
   append_to[current_length + 1] = (char)(number /  10 + 48);
   append_to[current_length + 2] = (char)(number       + 48);
-  
-  /*  printf("%s\n", append_to); */
 }
