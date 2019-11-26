@@ -9,19 +9,16 @@ void append_to_string(char *append_to, int number, int current_length);
 int find_number(char *string, int length_string);
 
 int main(int argc, char *argv[]){
-  int benchmark, node;
+  int benchmark;
   FILE *fp_reader, *fp_writer;
-  char ch, file_string_r[] = "workload000.txt", file_string_w[] = "tasks000.txt";
+  char ch;
 
-  node      = (argv[1][0] - 48);
   benchmark = find_number(argv[2], sizeof(argv[2])/sizeof(char));
   
   printf("This is node: %c it got %d parameters and the benchmark %s\n", argv[1][0], argc, argv[2]);
   
-  append_to_string(file_string_r, node, 8);
-  append_to_string(file_string_w, node, 5);
-  fp_reader = fopen(file_string_r, "r");
-  fp_writer = fopen(file_string_w, "w");
+  fp_reader = fopen(argv[argc - 2], "r");
+  fp_writer = fopen(argv[argc - 1], "w");
   if(fp_reader == NULL || fp_writer == NULL){
     printf("Couldn't open one of the files.");
     exit(EXIT_FAILURE);
