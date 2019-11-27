@@ -13,10 +13,11 @@ int not_number(char c);
 void restart_string(char *string, int n);
 char *find_number(char *string, int *place, int length_string);
 void set_number_to_string(int number, char *string);
+void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes);
 
 int main(void){
-  int *benchmarks, num_nodes, counter_bench = 0, counter_node = 0, i, ch_this_line, pos_point, ch_per_file, status = 0;
-  char string_c[] = "workload000.txt", desired[BIG_ENOUGH], ch, fstring[50], node_as_string[20];
+  int *benchmarks, num_nodes, i, pos_point, ch_per_file, status = 0;
+  char string_c[] = "workload000.txt", desired[BIG_ENOUGH], ch, fstring[50], node_as_string[20], users_choice[20];
   FILE *fp_reader, *fp_writer, *fp_non;
   
   srand(time(NULL));
@@ -45,29 +46,18 @@ int main(void){
     printf("Couldn't open one of the files.");
     exit(EXIT_FAILURE);
   }
-
+  
   /* This just tells the user the specification on each node. */
   for(i = 0; i < num_nodes; i++){
     printf("This is node nr. %2d it has the benchmark %d\n", i + 1, benchmarks[i]);
   }
 
-  /* This prints to the file temp, with standard '\[node nr.] [character]' and making sure the charcters per line doesn't exceed 15. */
-  ch_this_line = 0;
-  while((ch = getc(fp_reader)) != EOF){
-    if(ch != '\n'){
-      ch_this_line++;
-      fprintf(fp_writer, "\\%d %c ", counter_node + 1, ch);
-      counter_bench++;
-      /* makes it such that when a specific node has recived as many tasks as its bencmark it goes to the next node. */
-      if(counter_bench == benchmarks[counter_node]){
-        counter_bench = 0;
-        counter_node = (counter_node + 1) % num_nodes;
-      }
-      /* Makes sure the number of characters per line doesn't exceed 15. */
-      if(ch_this_line > 15){
-        ch_this_line = 0;
-        fputc('\n', fp_writer);
-      }
+  while(1 == 1){
+    printf("Which algorithm would you like to use? \nThe opstions is Weighted Round Robin(input 'wrr') or Round Robin(input 'rr') > ");
+    scanf(" %s", &users_choice);
+    if(strcmp(users_choice, "wrr")){
+      weighted_round_robin(fp_reader, fp_writer, benchmarks, num_nodes);
+      break;
     }
   }
 
@@ -136,6 +126,29 @@ int main(void){
   free(benchmarks);
 
   return EXIT_SUCCESS;
+}
+
+void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes){
+  /* This prints to the file temp, with standard '\[node nr.] [character]' and making sure the charcters per line doesn't exceed 15. */
+  int ch_this_line = 0, counter_bench = 0, counter_node = 0;
+  char ch;
+  while((ch = getc(fp_reader)) != EOF){
+    if(ch != '\n'){
+      ch_this_line++;
+      fprintf(fp_writer, "\\%d %c ", counter_node + 1, ch);
+      counter_bench++;
+      /* makes it such that when a specific node has recived as many tasks as its bencmark it goes to the next node. */
+      if(counter_bench == benchmarks[counter_node]){
+        counter_bench = 0;
+        counter_node = (counter_node + 1) % num_nodes;
+      }
+      /* Makes sure the number of characters per line doesn't exceed 15. */
+      if(ch_this_line > 15){
+        ch_this_line = 0;
+        fputc('\n', fp_writer);
+      }
+    }
+  }
 }
 
 /* Looks for a specific number in a string. */
