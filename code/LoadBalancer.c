@@ -5,6 +5,7 @@
 #include "WorkMaker.h"
 
 #define BIG_ENOUGH 1000
+#define ASCII_A 48
 
 void generate_benchmarks(int *benchmarks, int n);
 void append_to_string(char *append_to, int number, int current_length);
@@ -181,7 +182,7 @@ void restart_string(char *string, int n){
   }
 }
 
-
+/* Karl forklar her */
 char *find_number(char *string, int *place, int length_string){
   int i = 0;
   static char string_find[20];
@@ -208,23 +209,24 @@ int not_number(char c){
 
 /* replaces charcters in a string with a number, this is usfull in the format 'workload000.txt', where the 000 is replaced with the number. */
 void append_to_string(char *append_to, int number, int current_length){
-  append_to[current_length]     = (char)((number / 100)                        + 48);
-  append_to[current_length + 1] = (char)((((number % 100) - number % 10) / 10) + 48);
-  append_to[current_length + 2] = (char)(number %  10                          + 48);
+  append_to[current_length]     = (char)((number / 100)                        + ASCII_A);
+  append_to[current_length + 1] = (char)((((number % 100) - number % 10) / 10) + ASCII_A);
+  append_to[current_length + 2] = (char)(number %  10                          + ASCII_A);
 }
 
+/* Karl forklar her :) */
 void set_number_to_string(int number, char *string){
   int j = 0;
   if(number / 100 != 0)
-    string[j++] = (char)(number / 100 + 48);
+    string[j++] = (char)(number / 100 + ASCII_A);
   if(((number / 10 - (number / 100) * 10)  != 0) && number / 100 == 0)
-    string[j++] = (char)(number /  10 + 48);
+    string[j++] = (char)(number /  10 + ASCII_A);
   else if(((number / 10 - (number / 100) * 10) == 0) && (number / 100 != 0))
-    string[j++] = (char)(48);
+    string[j++] = (char)(ASCII_A);
   if((number - number / 10) != 0)
-    string[j++] = (char)(number % 10 + 48);
+    string[j++] = (char)(number % 10 + ASCII_A);
   else
-    string[j++] = (char)(48);
+    string[j++] = (char)(ASCII_A);
   string[j] = '\0';
 }
 
