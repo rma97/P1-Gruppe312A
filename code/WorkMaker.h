@@ -13,6 +13,7 @@ void generate_workload(void){
   int i, prime, random_number;
   FILE *workload;
 
+  /* Seeds the rand() with time */
   srand(time(NULL));
 
   printf("bla bla bla?: ");
@@ -28,12 +29,14 @@ void generate_workload(void){
   fclose(workload);
 }
 
+/* Checks if the file is opened properly */
 void check(FILE *pointer){
   if (pointer == NULL) {
     printf("Error opening the file!");
   }
 }
 
+/* Gets a random numnber between PRIME_MIN and PRIME_MAX */
 int random_gen(void){
     return (rand() % (PRIME_MAX - PRIME_MIN)) + 20;
 }
