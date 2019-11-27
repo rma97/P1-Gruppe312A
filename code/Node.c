@@ -25,6 +25,9 @@ int main(int argc, char *argv[]){
   }
 
   printf("This is the benchmark. %d\n", benchmark);
+
+  /*Writing to output file */
+  fprintf(fp_writer, "Node: %c - Benchmark %s \n",argv[1][0], argv[2]);
   
   while((ch = getc(fp_reader)) != EOF){
     Sleep((int) (((double) 10/benchmark)*10));
@@ -42,10 +45,9 @@ int find_number(char *string, int length_string){
   return (int)(string[0] - 48);
 }
 
+/* replaces charcters in a string with a number, this is usfull in the format 'workload000.txt', where the 000 is replaced with the number. */
 void append_to_string(char *append_to, int number, int current_length){
-  /*  printf("This is the number %d\n", number);*/
-  number = number;
-  append_to[current_length]     = (char)(number / 100 + 48);
-  append_to[current_length + 1] = (char)(number /  10 + 48);
-  append_to[current_length + 2] = (char)(number       + 48);
+  append_to[current_length]     = (char)((number / 100)                        + 48);
+  append_to[current_length + 1] = (char)((((number % 100) - number % 10) / 10) + 48);
+  append_to[current_length + 2] = (char)(number %  10                          + 48);
 }
