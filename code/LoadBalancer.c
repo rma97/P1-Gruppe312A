@@ -160,12 +160,12 @@ int seach_string(char *desired, int length, char *fstring, int *pos_point, int l
       j = 0;
       i++;
       while(desired[i] != ' '){
-	dude[j++] = desired[i++];
+	    dude[j++] = desired[i++];
       }
       set_number_to_string(look_for, casper);
       if(strcmp(dude, casper) == 0){
         fstring[0] = desired[++i];
-	*pos_point = i;
+	    *pos_point = i;
         return 1;
       }
     }
