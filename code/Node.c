@@ -1,54 +1,33 @@
 #include <stdio.h>
-/* 
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
-
-int main(int argc, char* argv[]) {
-    expects at least 1 argument node number
-    if (argc > 1) {
-         open file
-        part with benchmark??
-        
-        while not EOF
-        getc to get workload
-
-        sleep 1/benchmark
-    } else {
-        printf("not enough program arguments");
-    }
-}
-*/
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
+#include <windows.h>
 
 void append_to_string(char *append_to, int number, int current_length);
-void wait_for(unsigned int secs);
+int find_number(char *string, int length_string);
 
 int main(int argc, char *argv[]){
-  int benchmark, node;
+  int benchmark;
   FILE *fp_reader, *fp_writer;
-  char ch, file_string_r[] = "workload000.txt", file_string_w[] = "tasks000.txt";
+  char ch;
 
-  node      = (argv[1][0] - 48);
-  benchmark = (argv[2][0] - 48);
+  benchmark = find_number(argv[2], sizeof(argv[2])/sizeof(char));
   
   printf("This is node: %c it got %d parameters and the benchmark %s\n", argv[1][0], argc, argv[2]);
   
-  append_to_string(file_string_r, node, 8);
-  append_to_string(file_string_w, node, 5);
-  fp_reader = fopen(file_string_r, "r");
-  fp_writer = fopen(file_string_w, "w");
+  fp_reader = fopen(argv[argc - 2], "r");
+  fp_writer = fopen(argv[argc - 1], "w");
   if(fp_reader == NULL || fp_writer == NULL){
     printf("Couldn't open one of the files.");
     exit(EXIT_FAILURE);
   }
 
+  printf("This is the benchmark. %d\n", benchmark);
+  
   while((ch = getc(fp_reader)) != EOF){
-    wait_for((10 / benchmark));
+    Sleep((int) (((double) 10/benchmark)*10));
     printf("%c", ch);
     fprintf(fp_writer, "%d ", (int)(ch));
   }
@@ -59,10 +38,8 @@ int main(int argc, char *argv[]){
   return 0;
 }
 
-/* from stackoverflow */
-void wait_for(unsigned int secs) {
-  unsigned int retTime = time(0) + secs;
-  while (time(0) < retTime);            
+int find_number(char *string, int length_string){
+  return (int)(string[0] - 48);
 }
 
 void append_to_string(char *append_to, int number, int current_length){
@@ -71,6 +48,4 @@ void append_to_string(char *append_to, int number, int current_length){
   append_to[current_length]     = (char)(number / 100 + 48);
   append_to[current_length + 1] = (char)(number /  10 + 48);
   append_to[current_length + 2] = (char)(number       + 48);
-  
-  /*  printf("%s\n", append_to); */
 }

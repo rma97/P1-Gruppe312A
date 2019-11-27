@@ -12,7 +12,7 @@ int main(void){
   printf("How many characters?: ");
   scanf(" %d", &char_amount);
 
-  workload = fopen("Workload.txt", "w");
+  workload = fopen("workloads.txt", "w");
   check(workload);
 
   for (i = 1; i <= char_amount; i++){
@@ -24,7 +24,7 @@ int main(void){
       alphabet = 'a';
     }
   }
-
+  fclose(workload);
   return 0;
 }
 
