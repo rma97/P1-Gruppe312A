@@ -109,7 +109,7 @@ int main(void){
       set_number_to_string(i, node_as_string);
       status = seach_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i);
       while(status == 1){
-	fprintf(fp_writer, "%c", fstring[0]);
+        fprintf(fp_writer, "%c", fstring[0]);
 	ch_per_file++;
 	status = seach_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i);
       }
