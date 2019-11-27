@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 
-#define PRIME_MAX 101
+#define PRIME_MAX 100
 #define PRIME_MIN 20
 
 void check(FILE *pointer);
@@ -36,7 +36,7 @@ void check(FILE *pointer){
   }
 }
 
-/* Gets a random numnber between PRIME_MIN and PRIME_MAX */
+/* Gets a random number between PRIME_MIN and PRIME_MAX */
 int random_gen(void){
     return (rand() % (PRIME_MAX - PRIME_MIN)) + 20;
 }
