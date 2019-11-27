@@ -9,7 +9,7 @@
 
 void generate_benchmarks(int *benchmarks, int n);
 void append_to_string(char *append_to, int number, int current_length);
-int seach_string(char *desired, int length, char *fstring, int *pos_point, int look_for);
+int search_string(char *desired, int length, char *fstring, int *pos_point, int look_for);
 int not_number(char c);
 void restart_string(char *string, int n);
 char *find_number(char *string, int *place, int length_string);
@@ -102,14 +102,15 @@ int main(void){
       /* set the string to only '\0's. */
       restart_string(desired, sizeof(desired)/sizeof(char));
       restart_string(fstring, sizeof(fstring)/sizeof(char));
+      /* Skal forklares */
       fgets(desired, BIG_ENOUGH, fp_reader);
       pos_point = 0;
       set_number_to_string(i, node_as_string);
-      status = seach_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i);
+      status = search_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i);
       while(status == 1){
         fprintf(fp_writer, "%c", fstring[0]);
 	      ch_per_file++;
-	      status = seach_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i);
+	      status = search_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i);
       }
     }
     /* closes the file, which we are writing in, in the format 'workload[node nr.].txt'. */
@@ -160,25 +161,28 @@ void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int
 }
 
 /* Looks for a specific number in a string. */
-int seach_string(char *desired, int length, char *fstring, int *pos_point, int look_for){
+int search_string(char *desired, int length, char *fstring, int *pos_point, int look_for){
   int i, j;
-  char dude[20], casper[20];
+  char temp1[20], temp2[20];
+  /* Set a whole string to '\0'. */
   restart_string(fstring, 20);
+  /* Checks if the file_pointer points to the end of the file */
   if(*pos_point > length)
       return 0;
 
+  /* Forklar string-magien her */
   for(i = *pos_point; i < length; i++){
     if(desired[i] == '\\'){
-      restart_string(dude, 20);
+      restart_string(temp1, 20);
       j = 0;
       i++;
       while(desired[i] != ' '){
-	    dude[j++] = desired[i++];
+	    temp1[j++] = desired[i++];
       }
-      set_number_to_string(look_for, casper);
-      if(strcmp(dude, casper) == 0){
+      set_number_to_string(look_for, temp2);
+      if(strcmp(temp1, temp2) == 0){
         fstring[0] = desired[++i];
-	    *pos_point = i;
+	      *pos_point = i;
         return 1;
       }
     }
