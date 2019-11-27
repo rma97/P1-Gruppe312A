@@ -1,35 +1,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
+#define PRIME_MAX 101
+#define PRIME_MIN 20
 
 void check(FILE *pointer);
+int random_gen(void);
 
 void generate_workload(void){
-  int i, char_amount;
-  char alphabet = 'a';
+  int i, prime, random_number;
   FILE *workload;
 
-  printf("What should the size of the workload be?: ");
-  scanf(" %d", &char_amount);
+  srand(time(NULL));
+
+  printf("bla bla bla?: ");
+  scanf(" %d", &prime);
 
   workload = fopen("workloads.txt", "w");
   check(workload);
 
-  for (i = 1; i <= char_amount; i++){
-    fputc(alphabet, workload);
-
-    ++alphabet;
-
-    if (alphabet == 'z' + 1){
-      alphabet = 'a';
-    }
+  for (i = 0; i <= prime; i++){
+    random_number = random_gen();
+    fprintf(workload, "%d ", random_number);
   }
   fclose(workload);
 }
 
-/* Checks if the file is opened correct */
-void check(FILE *pointer) {
-  if(pointer == NULL) {
-    printf("Error opening the file!");             
+void check(FILE *pointer){
+  if (pointer == NULL) {
+    printf("Error opening the file!");
   }
+}
+
+int random_gen(void){
+    return (rand() % (PRIME_MAX - PRIME_MIN)) + 20;
 }
