@@ -5,6 +5,7 @@
 #include "WorkMaker.h"
 
 #define BIG_ENOUGH 1000
+#define ASCII_A 48
 
 void generate_benchmarks(int *benchmarks, int n);
 void append_to_string(char *append_to, int number, int current_length);
@@ -22,10 +23,10 @@ int main(void){
   
   srand(time(NULL));
   
-  printf("Hey, how many nodes, would you like to do the work for you? ");
+  /* Prompts for number of nodes and writes it to number_of_nodes.txt */
+  printf("How many nodes, would you like to do the work for you? ");
   scanf(" %d", &num_nodes);
 
-  /* Writes number of nodes to file number_of_nodes.txt */
   fp_non = fopen("number_of_nodes.txt", "w");
   fprintf(fp_non, "%d", num_nodes);
   fclose(fp_non);
@@ -36,12 +37,19 @@ int main(void){
     printf("Memory not allocated.");
     exit(EXIT_FAILURE);
   }
+
+  /* Generates a random benchmark weight between 1-5 */
   generate_benchmarks(benchmarks, num_nodes);
+
+  /* Generates the workload. Look at WorkMaker.c file to see how it works */ 
   generate_workload();
   
-  /* Start by opening the FILE from which to read. */
+  /* fp_reader opens workloads.txt to read the workload from. */
+  /* fp_writer opens tempt.txt to write the distributed workload to */
   fp_reader = fopen("workloads.txt", "r");
   fp_writer = fopen("temp.txt", "w");
+
+  /* Checks if the file pointers are opnened properly */
   if(fp_reader == NULL || fp_writer == NULL){
     printf("Couldn't open one of the files.");
     exit(EXIT_FAILURE);
@@ -88,10 +96,10 @@ int main(void){
       printf("Couldn't open %s", string_c);
       exit(EXIT_FAILURE);
     }
-    /* goes aslong we haven't reached the end of the file */
+    /* goes along while it hasn't reached the end of the file */
     while((ch = getc(fp_reader)) != EOF){
       ungetc(ch, fp_reader);
-      /* set the string to pure '\0's. */
+      /* set the string to only '\0's. */
       restart_string(desired, sizeof(desired)/sizeof(char));
       restart_string(fstring, sizeof(fstring)/sizeof(char));
       fgets(desired, BIG_ENOUGH, fp_reader);
@@ -100,8 +108,8 @@ int main(void){
       status = seach_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i);
       while(status == 1){
         fprintf(fp_writer, "%c", fstring[0]);
-	ch_per_file++;
-	status = seach_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i);
+	      ch_per_file++;
+	      status = seach_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i);
       }
     }
     /* closes the file, which we are writing in, in the format 'workload[node nr.].txt'. */
@@ -111,7 +119,7 @@ int main(void){
   /* Closes the reading file, 'temp.txt'. */
   fclose(fp_reader);
 
-  /* Start the nodes, such that they get their number and benchmark with. */
+  /* Start the nodes, such that they get their number and benchmark with in the arguments. */
   for(i = 1; i <= num_nodes; i++){
     restart_string(desired, 20);
     append_to_string(string_c, i, 8);
@@ -122,7 +130,7 @@ int main(void){
     system(fstring);
   }
 
-  /* frees the space which I've located in the heap. */
+  /* frees the space which is located in the heap. */
   free(benchmarks);
 
   return EXIT_SUCCESS;
@@ -165,12 +173,12 @@ int seach_string(char *desired, int length, char *fstring, int *pos_point, int l
       j = 0;
       i++;
       while(desired[i] != ' '){
-	dude[j++] = desired[i++];
+	    dude[j++] = desired[i++];
       }
       set_number_to_string(look_for, casper);
       if(strcmp(dude, casper) == 0){
         fstring[0] = desired[++i];
-	*pos_point = i;
+	    *pos_point = i;
         return 1;
       }
     }
@@ -187,7 +195,7 @@ void restart_string(char *string, int n){
   }
 }
 
-
+/* Karl forklar her */
 char *find_number(char *string, int *place, int length_string){
   int i = 0;
   static char string_find[20];
@@ -214,23 +222,24 @@ int not_number(char c){
 
 /* replaces charcters in a string with a number, this is usfull in the format 'workload000.txt', where the 000 is replaced with the number. */
 void append_to_string(char *append_to, int number, int current_length){
-  append_to[current_length]     = (char)((number / 100)                        + 48);
-  append_to[current_length + 1] = (char)((((number % 100) - number % 10) / 10) + 48);
-  append_to[current_length + 2] = (char)(number %  10                          + 48);
+  append_to[current_length]     = (char)((number / 100)                        + ASCII_A);
+  append_to[current_length + 1] = (char)((((number % 100) - number % 10) / 10) + ASCII_A);
+  append_to[current_length + 2] = (char)(number %  10                          + ASCII_A);
 }
 
+/* Karl forklar her :) */
 void set_number_to_string(int number, char *string){
   int j = 0;
   if(number / 100 != 0)
-    string[j++] = (char)(number / 100 + 48);
+    string[j++] = (char)(number / 100 + ASCII_A);
   if(((number / 10 - (number / 100) * 10)  != 0) && number / 100 == 0)
-    string[j++] = (char)(number /  10 + 48);
+    string[j++] = (char)(number /  10 + ASCII_A);
   else if(((number / 10 - (number / 100) * 10) == 0) && (number / 100 != 0))
-    string[j++] = (char)(48);
+    string[j++] = (char)(ASCII_A);
   if((number - number / 10) != 0)
-    string[j++] = (char)(number % 10 + 48);
+    string[j++] = (char)(number % 10 + ASCII_A);
   else
-    string[j++] = (char)(48);
+    string[j++] = (char)(ASCII_A);
   string[j] = '\0';
 }
 
