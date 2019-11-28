@@ -14,10 +14,13 @@ int find_prime(int);
 int is_prime(int);
 
 int main(int argc, char *argv[]){
-  int benchmark, result;
+  int benchmark, temp;
   FILE *fp_reader, *fp_writer;
+  int file_time_pos;
   char ch;
   time_t start_time = time(NULL);
+
+  temp = 0;
 
   /* Sets benchmark from the argument from Load_balancer.c */
   benchmark = find_number(argv[2], sizeof(argv[2])/sizeof(char));
@@ -36,13 +39,27 @@ int main(int argc, char *argv[]){
     exit(EXIT_FAILURE);
   }
 
-  /*Writing node number and benchmark to output file */
+  /*Write node number and benchmark to output file */
   fprintf(fp_writer, "Node: %c - Benchmark %s \n",argv[1][0], argv[2]);
-  
-  /* Calculating the workload (DOVYDAS) */
-  while ((ch = getc(fp_reader)) != EOF){
-    Sleep((int) (((double) 1/benchmark)*TIME_MULTIPLY));
+  fprintf(fp_writer, "Time: ");
 
+  /* Save file stream position for where run time is located */
+  file_time_pos = ftell(fp_writer);
+  /* "Allocate" 10 spaces for a number */
+  fprintf(fp_writer, "          \n");
+  
+  /* Calculating the workload */
+  while ((ch = getc(fp_reader)) != EOF){
+    ungetc(ch, fp_reader);
+    /* wait for arbitrary node speed */
+    Sleep((int) (((double) 1/benchmark)*TIME_MULTIPLY));
+    /* load and find current prime */
+    fscanf(fp_reader," %d ",&temp);
+    printf("finding prime %d: ",temp);
+    temp = find_prime(temp);
+    /* output the found prime to output and file */
+    printf("%d\n",temp);
+    fprintf(fp_writer, "%d ", temp);
 
     /*
     printf("%c", ch);
@@ -50,6 +67,10 @@ int main(int argc, char *argv[]){
     */
   }
   
+  /* set file stream position to where time is written */
+  fseek(fp_writer, file_time_pos, SEEK_SET);
+  /* write run time to allocated space */
+  fprintf(fp_writer, "%-10d\n", (int) difftime(time(NULL),start_time));
 
   /* Closes the file pointers */
   fclose(fp_reader);
@@ -63,16 +84,18 @@ int find_number(char *string, int length_string){
   return (int)(string[0] - ASCII_0);
 }
 
-int find_prime(int prime_to_find) {
+/* returns nth prime */
+int find_prime(int n) {
   int i, j;
   int last = 0;
-  for (i = 0; i < prime_to_find; i++) {
+  for (i = 0; i < n; i++) {
     last++;
     while (!is_prime(last)) last++;
   }
   return last;
 }
 
+/* checks if number is a prime, returns 1 if it is */ 
 int is_prime(int number) {
   int i, bool;
   bool = 0;
