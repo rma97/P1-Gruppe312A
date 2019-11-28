@@ -8,10 +8,11 @@ void append_to_string(char *append_to, int number, int current_length);
 void check(FILE *pointer);
 
 int main(void) {
-  int number_of_nodes, i;
+  int number_of_nodes, i, delete_count = 0, workload_individual = 0, workload_total = 0;
   char file_string_w[] = "tasks000.txt";
-  
+  char file_string_workload[] = "workload000.txt";
   char buffer[1000];
+  char ch;
   FILE *ptr_non = fopen("number_of_nodes.txt", "r");
   FILE *ptr_out = fopen("Output.txt.txt", "w");  
   check(ptr_non);
@@ -29,21 +30,45 @@ int main(void) {
   for(i = 1; i <= number_of_nodes; ++i) {
     append_to_string(file_string_w, i, 5);
     /* printf("%s\n", file_string_w); */
+    workload_individual = 0;
 
     FILE *ptr_task = fopen(file_string_w, "r");
-    check(ptr_task);
+    check(ptr_task); 
 
-    fprintf(ptr_out, "Node %d: \n", i);
+    while((ch = fgetc(ptr_task)) != EOF){
+      fputc(ch, ptr_out);
+    }
 
-    fgets(buffer, MAX_CHARS ,ptr_task);
-    fputs(buffer, ptr_out);
+    rewind(ptr_task);
 
-    fprintf(ptr_out, "\n\n");
+    fgets(buffer, 1000, ptr_task);  
+    while((ch = fgetc(ptr_task)) != EOF){
+      if (ch == ' '){
+        ++workload_individual;
+        ++workload_total;
+      }
+    } 
 
-    fclose(ptr_task);   
-  } 
+    fprintf(ptr_out, "\nIndividual workload amount: %d\n", workload_individual);
+
+    fprintf(ptr_out, "\n"); 
+
+    fclose(ptr_task); 
+
+    if (remove(file_string_w) == 0){
+      delete_count++;
+    }
+  }
+
+  fprintf(ptr_out, "Total workload amount: %d", workload_total);
 
   fclose(ptr_out);
+
+  for(i = 1; i <= number_of_nodes; ++i){
+    append_to_string(file_string_workload, i, 8);
+    remove(file_string_workload);
+  }
+
   return 0;
 
 }
