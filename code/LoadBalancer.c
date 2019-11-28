@@ -51,8 +51,8 @@ int main(void){
       /* Generates a random benchmark weight between 1-5 */
       generate_benchmarks(benchmarks, num_nodes);
       fp_non = fopen("number_of_nodes.txt", "w");
-      fprintf(fp_non, "%d ", num_nodes);
-      for(i = 1; i <= num_nodes; i++){
+      fprintf(fp_non, "%d\n", num_nodes);
+      for(i = 0; i < num_nodes; i++){
         fprintf(fp_non, "%d ", benchmarks[i]);
       }
       fclose(fp_non);
