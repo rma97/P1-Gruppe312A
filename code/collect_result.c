@@ -13,6 +13,7 @@ int main(void) {
   char file_string_workload[] = "workload000.txt";
   char buffer[1000];
   char ch;
+
   FILE *ptr_non = fopen("number_of_nodes.txt", "r");
   FILE *ptr_out = fopen("Output.txt.txt", "w");  
   check(ptr_non);
