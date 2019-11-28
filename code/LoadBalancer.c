@@ -63,7 +63,7 @@ int main(void){
       scanf(" %c", &new_data);
     }
     /* Generates the workload. Look at WorkMaker.c file to see how it works */
-    if((virgin == 1 || new_data == 'y' || new_data == 'Y') && !this_should_be_deleted_when_im_done_bet_whishes_from_the_one_and_only_Karl)
+    if((virgin == 1 || new_data == 'y' || new_data == 'Y'))
       generate_workload();
 
     /* fp_reader opens workloads.txt to read the workload from. */
@@ -163,7 +163,7 @@ void extract_info_from_temp_to_node_file(int num_nodes){
       /* converts a number into a string. With standard Math formating */
       set_number_to_string(i, node_as_string);
       while(search_string(one_line_from_temp, sizeof(one_line_from_temp)/sizeof(char), one_work_load, &pos_pointer, i)){
-        fprintf(fp_writer, "%s", one_work_load);
+        fprintf(fp_writer, "%s ", one_work_load);
         ch_per_file++;
       }
     }
@@ -214,7 +214,7 @@ void round_robin(FILE *fp_reader, FILE *fp_writer, int num_nodes){
 
 void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes){
   /* This prints to the file temp, with standard '\[node nr.] [character]' and making sure the charcters per line doesn't exceed 15. */
-  int ch_this_line = 0, counter_bench = 0, counter_node = 0, i;
+  int ch_this_line = 0, counter_bench = 0, counter_node = 0, i; 
   char ch, string_from_file[BIG_ENOUGH];
   while((ch = getc(fp_reader)) != EOF){
     ungetc(ch, fp_reader);
@@ -264,13 +264,21 @@ int search_string(char *desired, int length, char *fstring, int *pos_point, int 
       restart_string(temp1, 20);
       j = 0;
       i++;
+
       while(desired[i] != ' '){
 	    temp1[j++] = desired[i++];
       }
       set_number_to_string(look_for, temp2);
       if(strcmp(temp1, temp2) == 0){
-        fstring[0] = desired[++i];
-	      *pos_point = i;
+	j = 0;
+
+        while(desired[i] == ' ')
+	  i++;
+	
+	while(desired[i] != ' ')
+          fstring[j++] = desired[i++];
+	
+	*pos_point = ++i;
         return 1;
       }
     }
