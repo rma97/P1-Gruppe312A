@@ -18,91 +18,115 @@ void set_number_to_string(int number, char *string);
 void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes);
 void round_robin(FILE *fp_reader, FILE *fp_writer, int num_nodes);
 void extract_info_from_temp_to_node_file(int num_nodes);
+void start_the_nodes(int num_nodes, int *benchmarks);
 
 int main(void){
-  int *benchmarks, num_nodes, i, pos_point, ch_per_file;
-  char string_c[] = "workload000.txt", desired[BIG_ENOUGH], ch, fstring[50], node_as_string[20], users_choice[50], new_data, new_nodes;
+  int *benchmarks, num_nodes, i, virgin = 1, this_should_be_deleted_when_im_done_bet_whishes_from_the_one_and_only_Karl = 1;
+  char users_choice[50], simulate_again, new_data, new_nodes;
   FILE *fp_reader, *fp_writer, *fp_non;
   
   srand(time(NULL));
-  
-  /* Prompts for number of nodes and writes it to number_of_nodes.txt */
-  printf("How many nodes, would you like to do the work for you? ");
-  scanf(" %d", &num_nodes);
 
-  fp_non = fopen("number_of_nodes.txt", "w");
-  fprintf(fp_non, "%d", num_nodes);
-  fclose(fp_non);
-
-  /* Assign memory for benchmarks. */
-  benchmarks = malloc(num_nodes * sizeof(int));
-  if(benchmarks == NULL){
-    printf("Memory not allocated.");
-    exit(EXIT_FAILURE);
-  }
-
-  
-  /* Generates a random benchmark weight between 1-5 */
-  generate_benchmarks(benchmarks, num_nodes);
-
-  /* Generates the workload. Look at WorkMaker.c file to see how it works  */
-  generate_workload();
-  
-  /* fp_reader opens workloads.txt to read the workload from. */
-  /* fp_writer opens tempt.txt to write the distributed workload to */
-  fp_reader = fopen("workloads.txt", "r");
-  fp_writer = fopen("temp.txt", "w");
-
-  /* Checks if the file pointers are opnened properly */
-  if(fp_reader == NULL || fp_writer == NULL){
-    printf("Couldn't open one of the files.");
-    exit(EXIT_FAILURE);
-  }
-  
-  /* This just tells the user the specification on each node. */
-  for(i = 0; i < num_nodes; i++){
-    printf("This is node nr. %2d it has the benchmark %d\n", i + 1, benchmarks[i]);
-  }
-
-  while(1 == 1){
-    printf("Which algorithm would you like to use? \nThe opstions is Weighted Round Robin(input 'wrr') or Round Robin(input 'rr') > ");
-    scanf(" %s", users_choice);
-    if(strcmp(users_choice, "wrr") == 0){
-      weighted_round_robin(fp_reader, fp_writer, benchmarks, num_nodes);
-      break;
-    } else if(strcmp(users_choice, "rr") == 0){
-      round_robin(fp_reader, fp_writer, num_nodes);
-      break;
+  do{
+    if(!virgin){
+      printf("Do you want to change your nodes from the last time?(If you say yes(Y) you will get new benchmarks.)\n[Y/N] - ");
+      scanf(" %c", &new_nodes);
     }
-  }
+    if(virgin == 1 || new_nodes == 'Y' || new_nodes == 'y'){
+      /* frees the space which is located in the heap. */
+      if(!virgin)
+        free(benchmarks);
+      
+      /* Prompts for number of nodes and writes it to number_of_nodes.txt */
+      printf("How many nodes, would you like to do the work for you? ");
+      scanf(" %d", &num_nodes);
 
-  /* closes the 2 files. */
-  fclose(fp_reader);
-  fclose(fp_writer);
+      /* Assign memory for benchmarks. */
+      benchmarks = malloc(num_nodes * sizeof(int));
+      if(benchmarks == NULL){
+        printf("Memory not allocated.");
+        exit(EXIT_FAILURE);
+      }
 
-  extract_info_from_temp_to_node_file(num_nodes);
+      /* Generates a random benchmark weight between 1-5 */
+      generate_benchmarks(benchmarks, num_nodes);
+      fp_non = fopen("number_of_nodes.txt", "w");
+      fprintf(fp_non, "%d ", num_nodes);
+      for(i = 1; i <= num_nodes; i++){
+        fprintf(fp_non, "%d ", benchmarks[i]);
+      }
+      fclose(fp_non);
+    }
+
+    if(!virgin || this_should_be_deleted_when_im_done_bet_whishes_from_the_one_and_only_Karl){
+      printf("Do you want a new workload from the last time?\n[Y/N] - ");
+      scanf(" %c", &new_data);
+    }
+    /* Generates the workload. Look at WorkMaker.c file to see how it works */
+    if((virgin == 1 || new_data == 'y' || new_data == 'Y') && !this_should_be_deleted_when_im_done_bet_whishes_from_the_one_and_only_Karl)
+      generate_workload();
+
+    /* fp_reader opens workloads.txt to read the workload from. */
+    /* fp_writer opens tempt.txt to write the distributed workload to */
+    fp_reader = fopen("workloads.txt", "r");
+    fp_writer = fopen("temp.txt", "w");
+
+    /* Checks if the file pointers are opnened properly */
+    if(fp_reader == NULL || fp_writer == NULL){
+      printf("Couldn't open one of the files.");
+      exit(EXIT_FAILURE);
+    }
+
+    /* This just tells the user the specification on each node. */
+    for(i = 0; i < num_nodes; i++){
+      printf("This is node nr. %2d it has the benchmark %d\n", i + 1, benchmarks[i]);
+    }
+
+    while(1 == 1){
+      printf("Which algorithm would you like to use? \nThe opstions is Weighted Round Robin(input 'wrr') or Round Robin(input 'rr') > ");
+      scanf(" %s", users_choice);
+      if(strcmp(users_choice, "wrr") == 0){
+	weighted_round_robin(fp_reader, fp_writer, benchmarks, num_nodes);
+	break;
+      } else if(strcmp(users_choice, "rr") == 0){
+	round_robin(fp_reader, fp_writer, num_nodes);
+	break;
+      }
+    }
+
+    /* closes the 2 files. */
+    fclose(fp_reader);
+    fclose(fp_writer);
+
+    extract_info_from_temp_to_node_file(num_nodes);
+
+    /* Start the nodes, such that they get their number and benchmark with in the arguments. */
+    start_the_nodes(num_nodes, benchmarks);
+
+    printf("Do you want to do another simulation, be warned this will reset your workload files?\n[Y/N] - ");
+    scanf(" %c", &simulate_again);
+    virgin = 0;
+  }while(simulate_again == 'y' || simulate_again == 'Y');
   
-  
-  /* Start the nodes, such that they get their number and benchmark with in the arguments. */
-  for(i = 1; i <= num_nodes; i++){
-    restart_string(desired, 20);
-    append_to_string(string_c, i, 8);
-    strcpy(desired, "tasks000.txt");
-    append_to_string(desired, i, 5);
-    restart_string(fstring, 50);
-    snprintf(fstring, 50, "START node.exe %d %d %s %s", i, benchmarks[i - 1], string_c, desired);
-    system(fstring);
-  }
-
-  /* frees the space which is located in the heap. */
-  free(benchmarks);
-
   return EXIT_SUCCESS;
+}
+
+void start_the_nodes(int num_nodes, int *benchmarks){
+  char tasks_template[] = "tasks000.txt", workload_template[] = "workload000.txt", command_for_system[50];
+  int i;
+  
+  for(i = 1; i <= num_nodes; i++){
+    append_to_string(tasks_template, i, 5);
+    append_to_string(workload_template, i, 8);
+    snprintf(command_for_system, 50, "START node.exe %d %d %s %s", i, benchmarks[i - 1], workload_template, tasks_template);
+    system(command_for_system);
+  }
 }
 
 void extract_info_from_temp_to_node_file(int num_nodes){
   FILE *fp_reader, *fp_writer;
-  char one_line_from_temp[BIG_ENOUGH], workload_template = "workload000.txt";
+  char ch, one_line_from_temp[BIG_ENOUGH], workload_template[] = "workload000.txt", one_work_load[BIG_ENOUGH], node_as_string[20];
+  int i, pos_pointer, ch_per_file;
   
   /* opens 'temp.txt' in read mode. */
   fp_reader = fopen("temp.txt", "r");
@@ -120,26 +144,27 @@ void extract_info_from_temp_to_node_file(int num_nodes){
     /* appends a number to the text file with the format 'workload[node nr.].txt'. */
     append_to_string(workload_template, i, 8);
     /* opens the file workload[node nr.]. */
-    fp_writer = fopen(string_c, "w");
+    fp_writer = fopen(workload_template, "w");
     rewind(fp_writer);
     /* Checks the file as indead been opened. */
     if(fp_writer == NULL){
-      printf("Couldn't open %s", string_c);
+      printf("Couldn't open %s", workload_template);
       exit(EXIT_FAILURE);
     }
     /* goes along while it hasn't reached the end of the file */
     while((ch = getc(fp_reader)) != EOF){
       ungetc(ch, fp_reader);
       /* set the string to only '\0's. */
-      restart_string(desired, sizeof(desired)/sizeof(char));
-      restart_string(fstring, sizeof(fstring)/sizeof(char));
+      restart_string(one_line_from_temp, sizeof(one_line_from_temp)/sizeof(char));
+      restart_string(one_work_load, sizeof(one_work_load)/sizeof(char));
       /* Skal forklares */
-      fgets(desired, BIG_ENOUGH, fp_reader);
-      pos_point = 0;
+      fgets(one_line_from_temp, BIG_ENOUGH, fp_reader);
+      pos_pointer = 0;
+      /* converts a number into a string. With standard Math formating */
       set_number_to_string(i, node_as_string);
-      while(search_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i)){
-        fprintf(fp_writer, "%c", fstring[0]);
-	      ch_per_file++;
+      while(search_string(one_line_from_temp, sizeof(one_line_from_temp)/sizeof(char), one_work_load, &pos_pointer, i)){
+        fprintf(fp_writer, "%s", one_work_load);
+        ch_per_file++;
       }
     }
     /* closes the file, which we are writing in, in the format 'workload[node nr.].txt'. */
