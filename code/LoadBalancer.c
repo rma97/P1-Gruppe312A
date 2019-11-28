@@ -6,6 +6,7 @@
 
 #define BIG_ENOUGH 1000
 #define ASCII_A 48
+#define CH_PER_LINE_IN_TEMP 30
 
 void generate_benchmarks(int *benchmarks, int n);
 void append_to_string(char *append_to, int number, int current_length);
@@ -15,11 +16,12 @@ void restart_string(char *string, int n);
 char *find_number(char *string, int *place, int length_string);
 void set_number_to_string(int number, char *string);
 void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes);
-void round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes);
+void round_robin(FILE *fp_reader, FILE *fp_writer, int num_nodes);
+void extract_info_from_temp_to_node_file(int num_nodes);
 
 int main(void){
   int *benchmarks, num_nodes, i, pos_point, ch_per_file;
-  char string_c[] = "workload000.txt", desired[BIG_ENOUGH], ch, fstring[50], node_as_string[20], users_choice[50];
+  char string_c[] = "workload000.txt", desired[BIG_ENOUGH], ch, fstring[50], node_as_string[20], users_choice[50], new_data, new_nodes;
   FILE *fp_reader, *fp_writer, *fp_non;
   
   srand(time(NULL));
@@ -39,11 +41,12 @@ int main(void){
     exit(EXIT_FAILURE);
   }
 
+  
   /* Generates a random benchmark weight between 1-5 */
   generate_benchmarks(benchmarks, num_nodes);
 
   /* Generates the workload. Look at WorkMaker.c file to see how it works  */
-  /*  generate_workload(); */
+  generate_workload();
   
   /* fp_reader opens workloads.txt to read the workload from. */
   /* fp_writer opens tempt.txt to write the distributed workload to */
@@ -68,7 +71,7 @@ int main(void){
       weighted_round_robin(fp_reader, fp_writer, benchmarks, num_nodes);
       break;
     } else if(strcmp(users_choice, "rr") == 0){
-      round_robin(fp_reader, fp_writer, benchmarks, num_nodes);
+      round_robin(fp_reader, fp_writer, num_nodes);
       break;
     }
   }
@@ -77,6 +80,30 @@ int main(void){
   fclose(fp_reader);
   fclose(fp_writer);
 
+  extract_info_from_temp_to_node_file(num_nodes);
+  
+  
+  /* Start the nodes, such that they get their number and benchmark with in the arguments. */
+  for(i = 1; i <= num_nodes; i++){
+    restart_string(desired, 20);
+    append_to_string(string_c, i, 8);
+    strcpy(desired, "tasks000.txt");
+    append_to_string(desired, i, 5);
+    restart_string(fstring, 50);
+    snprintf(fstring, 50, "START node.exe %d %d %s %s", i, benchmarks[i - 1], string_c, desired);
+    system(fstring);
+  }
+
+  /* frees the space which is located in the heap. */
+  free(benchmarks);
+
+  return EXIT_SUCCESS;
+}
+
+void extract_info_from_temp_to_node_file(int num_nodes){
+  FILE *fp_reader, *fp_writer;
+  char one_line_from_temp[BIG_ENOUGH], workload_template = "workload000.txt";
+  
   /* opens 'temp.txt' in read mode. */
   fp_reader = fopen("temp.txt", "r");
   if(fp_reader == NULL){
@@ -91,7 +118,7 @@ int main(void){
     /* Sets the num for character per file, to 0. mostly for debugging. */
     ch_per_file = 0;
     /* appends a number to the text file with the format 'workload[node nr.].txt'. */
-    append_to_string(string_c, i, 8);
+    append_to_string(workload_template, i, 8);
     /* opens the file workload[node nr.]. */
     fp_writer = fopen(string_c, "w");
     rewind(fp_writer);
@@ -110,7 +137,7 @@ int main(void){
       fgets(desired, BIG_ENOUGH, fp_reader);
       pos_point = 0;
       set_number_to_string(i, node_as_string);
-      while(seach_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i)){
+      while(search_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i)){
         fprintf(fp_writer, "%c", fstring[0]);
 	      ch_per_file++;
       }
@@ -121,28 +148,43 @@ int main(void){
 
   /* Closes the reading file, 'temp.txt'. */
   fclose(fp_reader);
-
-  /* Start the nodes, such that they get their number and benchmark with in the arguments. */
-  for(i = 1; i <= num_nodes; i++){
-    restart_string(desired, 20);
-    append_to_string(string_c, i, 8);
-    strcpy(desired, "tasks000.txt");
-    append_to_string(desired, i, 5);
-    restart_string(fstring, 50);
-    snprintf(fstring, 50, "START node.exe %d %d %s %s", i, benchmarks[i - 1], string_c, desired);
-    system(fstring);
-  }
-
-  /* frees the space which is located in the heap. */
-  free(benchmarks);
-
-  return EXIT_SUCCESS;
 }
 
+void round_robin(FILE *fp_reader, FILE *fp_writer, int num_nodes){
+  int ch_this_line = 0, counter_node = 0, i, virgin = 0;
+  char ch, string_from_file[BIG_ENOUGH];
+  
+  while((ch = getc(fp_reader)) != EOF){
+    ungetc(ch, fp_reader);
+    restart_string(string_from_file, sizeof(string_from_file)/sizeof(char));
+    fgets(string_from_file, BIG_ENOUGH, fp_reader);
 
-void round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes){
-  int ch_this_line = 0, counter_bench = 0, counter_node = 0;
-  printf("%d, %d, %d", ch_this_line, counter_bench, counter_node);
+    i = 0;
+    while(string_from_file[i] != '\0'){
+      if(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n'){
+        fprintf(fp_writer, "\\%d ", counter_node + 1);
+	virgin = 1;
+      }
+      while(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n'){
+	fprintf(fp_writer, "%c", string_from_file[i]);
+        ch_this_line++;
+        /* makes it such that when a specific node has recived as many tasks as its bencmark it goes to the next node. */
+	i++;
+      }
+      if(virgin == 1){
+        counter_node = (counter_node + 1) % num_nodes;
+	virgin = 0;
+      }
+      if(string_from_file[i] == ' ')
+	fprintf(fp_writer, " ");
+      i++;
+      /* Makes sure the number of characters per line doesn't exceed 15. */
+      if(ch_this_line > CH_PER_LINE_IN_TEMP){
+        ch_this_line = 0;
+        fputc('\n', fp_writer);
+      }
+    }
+  }
 }
 
 void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes){
@@ -161,19 +203,19 @@ void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int
       while(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n'){
 	fprintf(fp_writer, "%c", string_from_file[i]);
         ch_this_line++;
-        counter_bench++;
         /* makes it such that when a specific node has recived as many tasks as its bencmark it goes to the next node. */
-        if(counter_bench == benchmarks[counter_node]){
-          counter_bench = 0;
-          counter_node = (counter_node + 1) % num_nodes;
-        }
 	i++;
+      }
+      counter_bench++;
+      if(counter_bench >= benchmarks[counter_node]){
+        counter_bench = 0;
+        counter_node = (counter_node + 1) % num_nodes;
       }
       if(string_from_file[i] == ' ')
 	fprintf(fp_writer, " ");
       i++;
       /* Makes sure the number of characters per line doesn't exceed 15. */
-      if(ch_this_line > 15){
+      if(ch_this_line > CH_PER_LINE_IN_TEMP){
         ch_this_line = 0;
         fputc('\n', fp_writer);
       }
@@ -221,6 +263,7 @@ void restart_string(char *string, int n){
 }
 
 /* Karl forklar her */
+/* Jeg tror slet ikke jeg bruger denne funktion, så lad os bare slette den. */
 char *find_number(char *string, int *place, int length_string){
   int i = 0;
   static char string_find[20];
