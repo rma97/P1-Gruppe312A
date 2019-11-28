@@ -15,10 +15,11 @@ void restart_string(char *string, int n);
 char *find_number(char *string, int *place, int length_string);
 void set_number_to_string(int number, char *string);
 void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes);
+void round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes);
 
 int main(void){
-  int *benchmarks, num_nodes, i, pos_point, ch_per_file, status = 0;
-  char string_c[] = "workload000.txt", desired[BIG_ENOUGH], ch, fstring[50], node_as_string[20], users_choice[20];
+  int *benchmarks, num_nodes, i, pos_point, ch_per_file;
+  char string_c[] = "workload000.txt", desired[BIG_ENOUGH], ch, fstring[50], node_as_string[20], users_choice[50];
   FILE *fp_reader, *fp_writer, *fp_non;
   
   srand(time(NULL));
@@ -41,8 +42,8 @@ int main(void){
   /* Generates a random benchmark weight between 1-5 */
   generate_benchmarks(benchmarks, num_nodes);
 
-  /* Generates the workload. Look at WorkMaker.c file to see how it works */ 
-  generate_workload();
+  /* Generates the workload. Look at WorkMaker.c file to see how it works  */
+  /*  generate_workload(); */
   
   /* fp_reader opens workloads.txt to read the workload from. */
   /* fp_writer opens tempt.txt to write the distributed workload to */
@@ -62,9 +63,12 @@ int main(void){
 
   while(1 == 1){
     printf("Which algorithm would you like to use? \nThe opstions is Weighted Round Robin(input 'wrr') or Round Robin(input 'rr') > ");
-    scanf(" %s", &users_choice);
-    if(strcmp(users_choice, "wrr")){
+    scanf(" %s", users_choice);
+    if(strcmp(users_choice, "wrr") == 0){
       weighted_round_robin(fp_reader, fp_writer, benchmarks, num_nodes);
+      break;
+    } else if(strcmp(users_choice, "rr") == 0){
+      round_robin(fp_reader, fp_writer, benchmarks, num_nodes);
       break;
     }
   }
@@ -105,11 +109,9 @@ int main(void){
       fgets(desired, BIG_ENOUGH, fp_reader);
       pos_point = 0;
       set_number_to_string(i, node_as_string);
-      status = seach_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i);
-      while(status == 1){
+      while(seach_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i)){
         fprintf(fp_writer, "%c", fstring[0]);
 	      ch_per_file++;
-	      status = seach_string(desired, sizeof(desired)/sizeof(char), fstring, &pos_point, i);
       }
     }
     /* closes the file, which we are writing in, in the format 'workload[node nr.].txt'. */
@@ -136,20 +138,39 @@ int main(void){
   return EXIT_SUCCESS;
 }
 
+
+void round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes){
+  int ch_this_line = 0, counter_bench = 0, counter_node = 0;
+  printf("%d, %d, %d", ch_this_line, counter_bench, counter_node);
+}
+
 void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes){
   /* This prints to the file temp, with standard '\[node nr.] [character]' and making sure the charcters per line doesn't exceed 15. */
-  int ch_this_line = 0, counter_bench = 0, counter_node = 0;
-  char ch;
+  int ch_this_line = 0, counter_bench = 0, counter_node = 0, i;
+  char ch, string_from_file[BIG_ENOUGH];
   while((ch = getc(fp_reader)) != EOF){
-    if(ch != '\n'){
-      ch_this_line++;
-      fprintf(fp_writer, "\\%d %c ", counter_node + 1, ch);
-      counter_bench++;
-      /* makes it such that when a specific node has recived as many tasks as its bencmark it goes to the next node. */
-      if(counter_bench == benchmarks[counter_node]){
-        counter_bench = 0;
-        counter_node = (counter_node + 1) % num_nodes;
+    ungetc(ch, fp_reader);
+    restart_string(string_from_file, sizeof(string_from_file)/sizeof(char));
+    fgets(string_from_file, BIG_ENOUGH, fp_reader);
+
+    i = 0;
+    while(string_from_file[i] != '\0'){
+      if(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n')
+        fprintf(fp_writer, "\\%d ", counter_node + 1);
+      while(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n'){
+	fprintf(fp_writer, "%c", string_from_file[i]);
+        ch_this_line++;
+        counter_bench++;
+        /* makes it such that when a specific node has recived as many tasks as its bencmark it goes to the next node. */
+        if(counter_bench == benchmarks[counter_node]){
+          counter_bench = 0;
+          counter_node = (counter_node + 1) % num_nodes;
+        }
+	i++;
       }
+      if(string_from_file[i] == ' ')
+	fprintf(fp_writer, " ");
+      i++;
       /* Makes sure the number of characters per line doesn't exceed 15. */
       if(ch_this_line > 15){
         ch_this_line = 0;
