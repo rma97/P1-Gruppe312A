@@ -239,7 +239,7 @@ char *find_number(char *string, int *place, int length_string){
 int not_number(char c){
   int i;
   for(i = 0; i < 10; i++){
-    if(c == (char)(i + 48))
+    if(c == (char)(i + ASCII_A))
       return 0;
   }
   return 1;
