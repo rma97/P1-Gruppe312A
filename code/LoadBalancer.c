@@ -63,7 +63,7 @@ int main(void){
       scanf(" %c", &new_data);
     }
     /* Generates the workload. Look at WorkMaker.c file to see how it works */
-    if((virgin == 1 || new_data == 'y' || new_data == 'Y'))
+    if(virgin == 1 && (new_data == 'y' || new_data == 'Y'))
       generate_workload();
 
     /* fp_reader opens workloads.txt to read the workload from. */
