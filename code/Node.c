@@ -26,7 +26,7 @@ int main(int argc, char *argv[]){
   benchmark = find_number(argv[2], sizeof(argv[2])/sizeof(char));
   
   /* Prints the nodenumber, its parameters and its benchmark */
-  printf("This is node: %c it got %d parameters and the benchmark %s\n", argv[1][0], argc, argv[2]);
+  printf("This is node: %s it got %d parameters and the benchmark %s\n", argv[1], argc, argv[2]);
   
   /* fp_reader opens the file with its workload inside and reads it */
   /* fp_writer creates a file to write its output to */
