@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 
-#define PRIME_MAX 101
+#define PRIME_MAX 100
 #define PRIME_MIN 20
 
 void check(FILE *pointer);
@@ -13,9 +13,10 @@ void generate_workload(void){
   int i, prime, random_number;
   FILE *workload;
 
+  /* Seeds the rand() with time */
   srand(time(NULL));
 
-  printf("bla bla bla?: ");
+  printf("How many primes do you want to generate?: ");
   scanf(" %d", &prime);
 
   workload = fopen("workloads.txt", "w");
@@ -28,12 +29,14 @@ void generate_workload(void){
   fclose(workload);
 }
 
+/* Checks if the file is opened properly */
 void check(FILE *pointer){
   if (pointer == NULL) {
     printf("Error opening the file!");
   }
 }
 
+/* Gets a random number between PRIME_MIN and PRIME_MAX */
 int random_gen(void){
     return (rand() % (PRIME_MAX - PRIME_MIN)) + 20;
 }
