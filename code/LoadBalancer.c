@@ -9,11 +9,10 @@
 #define CH_PER_LINE_IN_TEMP 30
 
 void generate_benchmarks(int *benchmarks, int n);
-void append_to_string(char *append_to, int number, int current_length);
+void change_template(char *append_to, int number);
 int search_string(char *desired, int length, char *fstring, int *pos_point, int look_for);
 int not_number(char c);
 void restart_string(char *string, int n);
-char *find_number(char *string, int *place, int length_string);
 void set_number_to_string(int number, char *string);
 void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes);
 void round_robin(FILE *fp_reader, FILE *fp_writer, int num_nodes);
@@ -116,8 +115,8 @@ void start_the_nodes(int num_nodes, int *benchmarks){
   int i;
   
   for(i = 1; i <= num_nodes; i++){
-    append_to_string(tasks_template, i, 5);
-    append_to_string(workload_template, i, 8);
+    change_template(tasks_template, i);
+    change_template(workload_template, i);
     snprintf(command_for_system, 50, "START node.exe %d %d %s %s", i, benchmarks[i - 1], workload_template, tasks_template);
     system(command_for_system);
   }
@@ -142,7 +141,7 @@ void extract_info_from_temp_to_node_file(int num_nodes){
     /* Sets the num for character per file, to 0. mostly for debugging. */
     ch_per_file = 0;
     /* appends a number to the text file with the format 'workload[node nr.].txt'. */
-    append_to_string(workload_template, i, 8);
+    change_template(workload_template, i);
     /* opens the file workload[node nr.]. */
     fp_writer = fopen(workload_template, "w");
     rewind(fp_writer);
@@ -295,22 +294,6 @@ void restart_string(char *string, int n){
   }
 }
 
-/* Karl forklar her */
-/* Jeg tror slet ikke jeg bruger denne funktion, så lad os bare slette den. */
-char *find_number(char *string, int *place, int length_string){
-  int i = 0;
-  static char string_find[20];
-
-  while(string[i] != ' '){
-    string_find[i] = string[*place + i];
-    i++;
-  }
-  string_find[i] = '\0';
-  *place = i;
-  
-  return string_find;
-}
-
 /* Checks that the charcter isn't a number. */
 int not_number(char c){
   int i;
@@ -322,21 +305,35 @@ int not_number(char c){
 }
 
 /* replaces charcters in a string with a number, this is usfull in the format 'workload000.txt', where the 000 is replaced with the number. */
-void append_to_string(char *append_to, int number, int current_length){
-  append_to[current_length]     = (char)((number / 100)                        + ASCII_A);
-  append_to[current_length + 1] = (char)((((number % 100) - number % 10) / 10) + ASCII_A);
-  append_to[current_length + 2] = (char)(number %  10                          + ASCII_A);
+void change_template(char *template, int number){
+  int i = 0, infinite_loop_break = 1000;
+  while(template[i] != '0'){
+    if(i >= infinite_loop_break){
+      printf("Wrong use of the function change_template.");
+      exit(EXIT_FAILURE);
+    }
+    i++;
+  }
+  template[i]     = (char)((number / 100)                        + ASCII_A);
+  template[i + 1] = (char)((((number % 100) - number % 10) / 10) + ASCII_A);
+  template[i + 2] = (char)(number %  10                          + ASCII_A);
 }
 
-/* Karl forklar her :) */
+/* This function changes a 3 decimales int to a string, with so weird math. */
 void set_number_to_string(int number, char *string){
   int j = 0;
+  /* The first if statemant checks if there is a value in the a hundred place. */
   if(number / 100 != 0)
     string[j++] = (char)(number / 100 + ASCII_A);
+  
+  /* This both check if there is a value greater than 0 in the 10th place, and if there hsa been an 100th. */
   if(((number / 10 - (number / 100) * 10)  != 0) && number / 100 == 0)
     string[j++] = (char)(number /  10 + ASCII_A);
   else if(((number / 10 - (number / 100) * 10) == 0) && (number / 100 != 0))
     string[j++] = (char)(ASCII_A);
+  
+  /* The last else statement could be left out, but it given a closer look into whats happening. 
+   * Which is, that the number on the 1th place i printed no matter what. */
   if((number - number / 10) != 0)
     string[j++] = (char)(number % 10 + ASCII_A);
   else
