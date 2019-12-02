@@ -22,7 +22,7 @@ void generate_workload(void){
   workload = fopen("workloads.txt", "w");
   check(workload);
 
-  for (i = 0; i <= prime; i++){
+  for (i = 1; i <= prime; i++){
     random_number = random_gen();
     fprintf(workload, "%d ", random_number);
   }
