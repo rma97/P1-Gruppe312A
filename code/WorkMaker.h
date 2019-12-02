@@ -10,14 +10,18 @@ void check(FILE *pointer);
 int random_gen(void);
 
 void generate_workload(void){
-  int i, prime, random_number;
+  int i, prime, random_number, num_input;
   FILE *workload;
 
   /* Seeds the rand() with time */
   srand(time(NULL));
 
-  printf("How many primes do you want to generate?: ");
-  scanf(" %d", &prime);
+  do{
+    printf("How many characters?: ");
+    num_input = scanf(" %d", &prime);
+    scanf("%*[^\n]");
+    printf("\n");
+  }while((prime <= 0 || prime >= 1000000) && num_input < 1);
 
   workload = fopen("workloads.txt", "w");
   check(workload);

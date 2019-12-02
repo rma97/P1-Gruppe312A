@@ -5,12 +5,16 @@
 void check(FILE *pointer);
 
 int main(void){
-  int i, char_amount;
+  int i, char_amount, num_input;
   char alphabet = 'a';
   FILE *workload;
 
-  printf("How many characters?: ");
-  scanf(" %d", &char_amount);
+  do{
+    printf("How many characters?: ");
+    num_input = scanf(" %d", &char_amount);
+    scanf("%*[^\n]");
+    printf("\n");
+  }while((char_amount <= 0 || char_amount >= 1000000) && num_input > 0);
 
   workload = fopen("workloads.txt", "w");
   check(workload);

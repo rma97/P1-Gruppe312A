@@ -20,9 +20,10 @@ void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int
 void round_robin(FILE *fp_reader, FILE *fp_writer, int num_nodes);
 void extract_info_from_temp_to_node_file(int num_nodes);
 void start_the_nodes(int num_nodes, int *benchmarks);
+int valid_boolean_input(char new_nodes);
 
 int main(void){
-  int *benchmarks, num_nodes, i, virgin = 1, this_should_be_deleted_when_im_done_bet_whishes_from_the_one_and_only_Karl = 1;
+  int *benchmarks, num_nodes, i, virgin = 1;
   char users_choice[50], simulate_again, new_data, new_nodes;
   FILE *fp_reader, *fp_writer, *fp_non;
   
@@ -31,17 +32,29 @@ int main(void){
   do{
     /* (!virgin) = If it's not the first time that the loop runs. */
     if(!virgin){
-      printf("Do you want to change your nodes from the last time?(If you say yes(Y) you will get new benchmarks.)\n[Y/N] - ");
-      scanf(" %c", &new_nodes);
+      new_nodes = ' ';
+      do{
+        /* This will set as true if and only if, the input i either 'y' or 'Y'. */
+        printf("Do you want to change your nodes from the last time?(If you say yes(Y) you will get new benchmarks.)\n[Y/N] - ");
+        scanf(" %c", &new_nodes);
+        /* Eats everyting after the first character. */
+        scanf("%*[^\n]");
+      }while(!valid_boolean_input(new_nodes));
     }
     if(virgin == 1 || new_nodes == 'Y' || new_nodes == 'y'){
       /* frees the space which is located in the heap. */
       if(!virgin)
         free(benchmarks);
-      
-      /* Prompts for number of nodes and writes it to number_of_nodes.txt */
-      printf("How many nodes, would you like to do the work for you? ");
-      scanf(" %d", &num_nodes);
+
+      /* Resets the number of nodes. */
+      num_nodes = 0;
+      do{
+        /* Prompts for number of nodes and writes it to number_of_nodes.txt */
+	printf("How many nodes, would you like to do the work for you? ");
+        scanf(" %d", &num_nodes);
+	/* This eats the rest of the string, if it should exsit. */
+	scanf("%*[^\n]");
+      }while((num_nodes <= 0) || (num_nodes >= 1000));
 
       /* Assign memory for benchmarks. */
       benchmarks = malloc(num_nodes * sizeof(int));
@@ -59,13 +72,20 @@ int main(void){
       }
       fclose(fp_non);
     }
+    printf("\n");
 
-    if(!virgin || this_should_be_deleted_when_im_done_bet_whishes_from_the_one_and_only_Karl){
-      printf("Do you want a new workload from the last time?\n[Y/N] - ");
-      scanf(" %c", &new_data);
+    new_data = ' ';
+    if(!virgin){
+      do{
+        /* This will set as true if and only if, the input i either 'y' or 'Y'. */
+        printf("Do you want a new workload from the last time? [Y/N] - ");
+        scanf(" %c", &new_data);
+        /* Eats everything after the first character. */
+        scanf("%*[^\n]");
+      }while(!valid_boolean_input(new_data));
     }
     /* Generates the workload. Look at WorkMaker.c file to see how it works */
-    if(/*virgin == 1 || */(new_data == 'y' || new_data == 'Y'))
+    if(virgin == 1 || (new_data == 'y' || new_data == 'Y'))
       generate_workload();
 
     /* fp_reader opens workloads.txt to read the workload from. */
@@ -82,6 +102,7 @@ int main(void){
     for(i = 0; i < num_nodes; i++){
       printf("This is node nr. %2d it has the benchmark %d\n", i + 1, benchmarks[i]);
     }
+    printf("\n");
 
     /* Ask the user which algorithm to use. */
     while(1 == 1){
@@ -94,8 +115,10 @@ int main(void){
 	round_robin(fp_reader, fp_writer, num_nodes);
 	break;
       }
+      printf("\n");
     }
-
+    printf("\n");
+    
     /* closes the 2 files. */
     fclose(fp_reader);
     fclose(fp_writer);
@@ -105,8 +128,15 @@ int main(void){
     /* Start the nodes, such that they get their number and benchmark with in the arguments. */
     start_the_nodes(num_nodes, benchmarks);
 
-    printf("Do you want to do another simulation, be warned this will reset your workload files?\n[Y/N] - ");
-    scanf(" %c", &simulate_again);
+    simulate_again = ' ';
+    do{
+      printf("Do you want to do another simulation, be warned this will reset your workload files? [Y/N] - ");
+      scanf(" %c", &simulate_again);
+      /* Eats everything after the first character. */
+      scanf("%*[^\n]");
+    }while(!valid_boolean_input(simulate_again));
+    
+    printf("\n");
     virgin = 0;
   }while(simulate_again == 'y' || simulate_again == 'Y');
   
@@ -180,6 +210,19 @@ void extract_info_from_temp_to_node_file(int num_nodes){
 
   /* Closes the reading file, 'temp.txt'. */
   fclose(fp_reader);
+}
+
+/* This function checks if the it's a true boolean, that is to say, either 'y', 'Y', 'n' or 'N' */
+int valid_boolean_input(char new_nodes){
+  int is_valid = 0;
+  switch(new_nodes){
+    case 'y': is_valid = 1; break;
+    case 'Y': is_valid = 1; break;
+    case 'n': is_valid = 1; break;
+    case 'N': is_valid = 1; break;
+    default: is_valid = 0; break;
+  }
+  return is_valid;
 }
 
 /* This is the Round Robin algorithm, it gives the same amount of work to each node. */
