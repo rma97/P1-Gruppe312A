@@ -42,7 +42,8 @@ int main(void) {
 
     rewind(ptr_task);
 
-    fgets(buffer, 1000, ptr_task);  
+    fgets(buffer, 1000, ptr_task);
+    fgets(buffer, 1000, ptr_task);   
     while((ch = fgetc(ptr_task)) != EOF){
       if (ch == ' '){
         ++workload_individual;
