@@ -16,9 +16,11 @@ void generate_workload(void){
   /* Seeds the rand() with time */
   srand(time(NULL));
 
+  /* Runs until it's given a valid input */
   do{
     printf("How many characters?: ");
     num_input = scanf(" %d", &prime);
+    /* Eats everyting after the first number, and if there is no number, everything. */
     scanf("%*[^\n]");
     printf("\n");
   }while((prime <= 0 || prime >= 1000000) && num_input < 1);

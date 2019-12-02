@@ -9,9 +9,11 @@ int main(void){
   char alphabet = 'a';
   FILE *workload;
 
+  /* Runs until it's given a valid input */
   do{
     printf("How many characters?: ");
     num_input = scanf(" %d", &char_amount);
+    /* Eats everyting after the first number, and if there is no number, everything. */
     scanf("%*[^\n]");
     printf("\n");
   }while((char_amount <= 0 || char_amount >= 1000000) && num_input > 0);
