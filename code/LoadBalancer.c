@@ -4,6 +4,9 @@
 #include <time.h>
 #include "WorkMaker.h"
 
+/* BIG_ENOUGH is the maximum length, we accept for a string. 
+ * ASCII_A is the number which 0 is in ASCII alphabet, used to converting numbers.
+ * CH_PER_LINE_IN_TEMP is the number of characters we want per line in our temp file. */
 #define BIG_ENOUGH 1000
 #define ASCII_A 48
 #define CH_PER_LINE_IN_TEMP 30
@@ -11,7 +14,6 @@
 void generate_benchmarks(int *benchmarks, int n);
 void change_template(char *append_to, int number);
 int search_string(char *desired, int length, char *fstring, int *pos_point, int look_for);
-int not_number(char c);
 void restart_string(char *string, int n);
 void set_number_to_string(int number, char *string);
 void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes);
@@ -27,6 +29,7 @@ int main(void){
   srand(time(NULL));
   
   do{
+    /* (!virgin) = If it's not the first time that the loop runs. */
     if(!virgin){
       printf("Do you want to change your nodes from the last time?(If you say yes(Y) you will get new benchmarks.)\n[Y/N] - ");
       scanf(" %c", &new_nodes);
@@ -69,7 +72,6 @@ int main(void){
     /* fp_writer opens tempt.txt to write the distributed workload to */
     fp_reader = fopen("workloads.txt", "r");
     fp_writer = fopen("temp.txt", "w");
-
     /* Checks if the file pointers are opnened properly */
     if(fp_reader == NULL || fp_writer == NULL){
       printf("Couldn't open one of the files.");
@@ -81,6 +83,7 @@ int main(void){
       printf("This is node nr. %2d it has the benchmark %d\n", i + 1, benchmarks[i]);
     }
 
+    /* Ask the user which algorithm to use. */
     while(1 == 1){
       printf("Which algorithm would you like to use? \nThe opstions is Weighted Round Robin(input 'wrr') or Round Robin(input 'rr') > ");
       scanf(" %s", users_choice);
@@ -110,18 +113,23 @@ int main(void){
   return EXIT_SUCCESS;
 }
 
+/* This function starts the nodes. */
 void start_the_nodes(int num_nodes, int *benchmarks){
   char tasks_template[] = "tasks000.txt", workload_template[] = "workload000.txt", command_for_system[50];
   int i;
-  
+
+  /* It start each node seperatly, therefore this loop runs n number of times where n is the number of nodes. */
   for(i = 1; i <= num_nodes; i++){
+    /* Changes the two templates, workload000.txt and tasks000.txt */
     change_template(tasks_template, i);
     change_template(workload_template, i);
+    /* Append the whole things as a command to give to the system. And runs it. */
     snprintf(command_for_system, 50, "START node.exe %d %d %s %s", i, benchmarks[i - 1], workload_template, tasks_template);
     system(command_for_system);
   }
 }
 
+/* Extracts the information from the temp file, to the correct workload file. */
 void extract_info_from_temp_to_node_file(int num_nodes){
   FILE *fp_reader, *fp_writer;
   char ch, one_line_from_temp[BIG_ENOUGH], workload_template[] = "workload000.txt", one_work_load[BIG_ENOUGH], node_as_string[20];
@@ -174,31 +182,38 @@ void extract_info_from_temp_to_node_file(int num_nodes){
   fclose(fp_reader);
 }
 
+/* This is the Round Robin algorithm, it gives the same amount of work to each node. */
 void round_robin(FILE *fp_reader, FILE *fp_writer, int num_nodes){
-  int ch_this_line = 0, counter_node = 0, i, virgin = 0;
+  int ch_this_line = 0, counter_node = 0, i, node_used  = 0;
   char ch, string_from_file[BIG_ENOUGH];
-  
+
+  /* First checks if the next character in the loop is the end of the file. Else run (again).*/
   while((ch = getc(fp_reader)) != EOF){
     ungetc(ch, fp_reader);
+    /* Makes sure the string is empty */
     restart_string(string_from_file, sizeof(string_from_file)/sizeof(char));
     fgets(string_from_file, BIG_ENOUGH, fp_reader);
 
+    /* While the new string extracted from the workload file, isn't empty keep going. */
     i = 0;
     while(string_from_file[i] != '\0'){
+      /* If the current character isn't a space, the end of the string or a new line. Give the character to the next node. */
       if(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n'){
         fprintf(fp_writer, "\\%d ", counter_node + 1);
-	virgin = 1;
+	node_used = 1;
       }
+      /* Keeps giving the next character to the last node, untill it hits either a space, end of string or new line.  */
       while(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n'){
 	fprintf(fp_writer, "%c", string_from_file[i]);
         ch_this_line++;
-        /* makes it such that when a specific node has recived as many tasks as its bencmark it goes to the next node. */
 	i++;
       }
-      if(virgin == 1){
+      /* If the node has been used, get the next node, and set the nodes virginity to 0. */
+      if(node_used == 1){
         counter_node = (counter_node + 1) % num_nodes;
-	virgin = 0;
+	node_used = 0;
       }
+      /* If we find a space in the workload file, just add it to the temp file. */
       if(string_from_file[i] == ' ')
 	fprintf(fp_writer, " ");
       i++;
@@ -215,26 +230,31 @@ void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int
   /* This prints to the file temp, with standard '\[node nr.] [character]' and making sure the charcters per line doesn't exceed 15. */
   int ch_this_line = 0, counter_bench = 0, counter_node = 0, i; 
   char ch, string_from_file[BIG_ENOUGH];
+  /* First checks if the next character in the loop is the end of the file. Else run (again).*/
   while((ch = getc(fp_reader)) != EOF){
     ungetc(ch, fp_reader);
     restart_string(string_from_file, sizeof(string_from_file)/sizeof(char));
     fgets(string_from_file, BIG_ENOUGH, fp_reader);
 
+    /* While the new string extracted from the workload file, isn't empty keep going. */
     i = 0;
     while(string_from_file[i] != '\0'){
+      /* If the current character isn't a space, the end of the string or a new line. Give the character to the next node. */
       if(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n')
         fprintf(fp_writer, "\\%d ", counter_node + 1);
+      /* Keeps giving the next character to the last node, untill it hits either a space, end of string or new line.  */
       while(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n'){
 	fprintf(fp_writer, "%c", string_from_file[i]);
         ch_this_line++;
-        /* makes it such that when a specific node has recived as many tasks as its bencmark it goes to the next node. */
 	i++;
       }
+      /* makes it such that when a specific node has recived as many tasks as its bencmark it goes to the next node. */
       counter_bench++;
       if(counter_bench >= benchmarks[counter_node]){
         counter_bench = 0;
         counter_node = (counter_node + 1) % num_nodes;
       }
+      /* If we find a space in the workload file, just add it to the temp file. */
       if(string_from_file[i] == ' ')
 	fprintf(fp_writer, " ");
       i++;
@@ -257,36 +277,46 @@ int search_string(char *desired, int length, char *fstring, int *pos_point, int 
   if(*pos_point > length)
       return 0;
 
-  /* Forklar string-magien her */
+  /* This runs until the index reach the end of the string.*/
   for(i = *pos_point; i < length; i++){
+    /* Since this string is looking trough the temp file, with the format \[number] [task] \[new number] [new task] ...  and so on. 
+     * search_string, is suppose to find the tasks given to a specific node, so the tasks coming after \look_for [task]. 
+     * This checks if the current number is \ and therefore a new number, to be checked to look for. */
     if(desired[i] == '\\'){
       restart_string(temp1, 20);
       j = 0;
       i++;
 
+      /* This adds all the numbers to a string untill we reach a new space. */
       while(desired[i] != ' '){
 	    temp1[j++] = desired[i++];
       }
+      /* Sets the number look_for to the string temp2. */
       set_number_to_string(look_for, temp2);
+      /* Compars if the current number after the '\' is the number are looking for. */
       if(strcmp(temp1, temp2) == 0){
 	j = 0;
-
+	/* We continue in the file untill we reach something that isn't a space. */
         while(desired[i] == ' ')
 	  i++;
-	
+
+	/* Now that we reach something that isn't a space we continue and save every character to we reach a space. */
 	while(desired[i] != ' ')
+	  /* This task is now saved in our string pointer. */
           fstring[j++] = desired[i++];
-	
+
+	/* we set our new pos_pointer, that is to say the place we want to start reading next time we search for this number. and returns 1.*/
 	*pos_point = ++i;
         return 1;
       }
     }
   }
+  /* If we don't find any occurences of the number we just return 0. */
   return 0;
 }
 
 
-/* Set a whole string to '\0'. */
+/* Set a whole string to '\0's. */
 void restart_string(char *string, int n){
   int i;
   for(i = 0; i < n; i++){
@@ -294,19 +324,10 @@ void restart_string(char *string, int n){
   }
 }
 
-/* Checks that the charcter isn't a number. */
-int not_number(char c){
-  int i;
-  for(i = 0; i < 10; i++){
-    if(c == (char)(i + ASCII_A))
-      return 0;
-  }
-  return 1;
-}
-
 /* replaces charcters in a string with a number, this is usfull in the format 'workload000.txt', where the 000 is replaced with the number. */
 void change_template(char *template, int number){
   int i = 0, infinite_loop_break = 1000;
+  /* This goes until it find the first occurence of 0 in the template / string, and stop if i reaches 1000, so not to get stuck in an infinit loop. */
   while(template[i] != '0'){
     if(i >= infinite_loop_break){
       printf("Wrong use of the function change_template.");
@@ -314,8 +335,11 @@ void change_template(char *template, int number){
     }
     i++;
   }
+  /* This is the 100th spot, so for each time we can divide the number with 100. */
   template[i]     = (char)((number / 100)                        + ASCII_A);
+  /* This is the  10th spot, so that is the remaning of dividing with 100 minus the reaming divided by 10. divided with 10. */
   template[i + 1] = (char)((((number % 100) - number % 10) / 10) + ASCII_A);
+  /* this is the   1th spot, and is just the remaning after dividing by 10. */
   template[i + 2] = (char)(number %  10                          + ASCII_A);
 }
 
