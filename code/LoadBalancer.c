@@ -283,10 +283,10 @@ void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int
     i = 0;
     while(string_from_file[i] != '\0'){
       /* If the current character isn't a space, the end of the string or a new line. Give the character to the next node. */
-      if(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n')
+      if(string_from_file[i] != ' ' && string_from_file[i] != '\n')
         fprintf(fp_writer, "\\%d ", counter_node + 1);
       /* Keeps giving the next character to the last node, untill it hits either a space, end of string or new line.  */
-      while(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n'){
+      while(string_from_file[i] != ' ' && string_from_file[i] != '\n'){
 	fprintf(fp_writer, "%c", string_from_file[i]);
         ch_this_line++;
 	i++;
