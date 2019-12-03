@@ -8,7 +8,6 @@
 #define ASCII_0 48
 #define TIME_MULTIPLY 100
 
-void append_to_string(char *append_to, int number, int current_length);
 int find_number(char *string, int length_string);
 int find_prime(int);
 int is_prime(int);
@@ -102,11 +101,4 @@ int is_prime(int number) {
   for (i = number/2; (i > 0) && (number % i != 0); i--);
   if (i == 1) bool = 1;
   return bool;
-}
-
-/* replaces charcters in a string with a number, this is usfull in the format 'workload000.txt', where the 000 is replaced with the number. */
-void append_to_string(char *append_to, int number, int current_length){
-  append_to[current_length]     = (char)((number / 100)                        + ASCII_0);
-  append_to[current_length + 1] = (char)((((number % 100) - number % 10) / 10) + ASCII_0);
-  append_to[current_length + 2] = (char)((number %  10)                        + ASCII_0);
 }
