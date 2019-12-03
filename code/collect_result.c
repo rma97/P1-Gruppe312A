@@ -20,7 +20,7 @@ int compare_time(const void *p1, const void *p2);
 
 int main(void) {
   int number_of_nodes, i, delete_count = 0, workload_individual = 0, workload_total = 0;
-  char file_string_w[] = "tasks000.txt";
+  char file_string_tasks[] = "tasks000.txt";
   char file_string_workload[] = "workload000.txt";
   char file_string_output[] = "Output000.txt";
   char line_from_file[1000];
@@ -31,16 +31,20 @@ int main(void) {
   FILE *ptr_non, *ptr_out, *ptr_task;
 
   ptr_non = fopen("number_of_nodes.txt", "r");
+  /* Loop that creates multiple Output files */
   for (i = 0; i < 1000; ++i){
     change_template(file_string_output, i);
+    /* access function checks if a file exists, from the library unistd.h. While there are Output files it keeps counting,
+       if there isn't, it breaks. */
     if(access(file_string_output, F_OK) == -1){
-      change_template(file_string_output, i);
       break;
     }
   }
   ptr_out = fopen(file_string_output, "w");
   check(ptr_non);
   check(ptr_out);
+
+  /* reads the number_of_nodes.txt files to recieve the number of nodes */
   fgets(temp, 50, ptr_non);
   
   sscanf(temp, " %d", &number_of_nodes);
@@ -51,34 +55,31 @@ int main(void) {
   /* printf("Combines the following files to Output.txt\n"); */
 
   for(i = 1; i <= number_of_nodes; ++i) {
-    change_template(file_string_w, i);
-    /* printf("%s\n", file_string_w); */
+    change_template(file_string_tasks, i);
     workload_individual = 0;
 
-    ptr_task = fopen(file_string_w, "r");
+    ptr_task = fopen(file_string_tasks, "r");
     check(ptr_task); 
 
-    /* while((ch = fgetc(ptr_task)) != EOF){
-      ungetc(ch, ptr_task);
-      restart_string(line_from_file, sizeof(line_from_file) / sizeof(char));
-      fgets(line_from_file, 1000, ptr_task);
-      fprintf(ptr_task, "%s ", line_from_file);
-      sscanf(line_from_file, "Time: %d", &time[i]);
-      printf("%d\n", time[i]);
-    } */
-
+    /* Loop that copies every char from the individual task file into the Output file */
     while((ch = fgetc(ptr_task)) != EOF){
       fputc(ch, ptr_out);
     }
 
+    /* Rewind function from the string.h library, to go back to the beginning of the file */
     rewind(ptr_task);
 
+    /* Use the fgets function, from string.h, to remove the first two lines of the file and put it into an array */
     fgets(buffer, 1000, ptr_task);
+    /* Second line of the file is important, as the runtime of each node is important data so it is moved into a different array*/
     fgets(line_from_file, 1000, ptr_task);
 
+    /* Scan for the runtime integer which is saved in the time array in the struct. */
     sscanf(line_from_file, "Time: %d", &time[i-1].time);
     time[i-1].node_ID = i;
 
+    /* To avoid manually counting a large workload, a while loop goes through the third line of the task file and counts whitespace, 
+       as the numbers in the file are separated by a whitespace */
     while((ch = fgetc(ptr_task)) != EOF){
       if (ch == ' '){
         ++workload_individual;
@@ -92,20 +93,22 @@ int main(void) {
 
     fclose(ptr_task); 
 
-    if (remove(file_string_w) == 0){
+    /* After everything important from the file is retrieved, it is deleted. */
+    if (remove(file_string_tasks) == 0){
       delete_count++;
     }
   }
 
-
-
+  /* After the runtime of each node is stored, it is sorted so they're ordered by speed */
   qsort(time, number_of_nodes, sizeof(node), compare_time);
 
   fprintf(ptr_out, "\nSlowest node(%d): %d\nFastest node(%d): %d\n", time[0].node_ID, time[0].time, time[number_of_nodes-1].node_ID, 
                                                                      time[number_of_nodes-1].time);
+  
   for (i=0;i<number_of_nodes;++i){
     printf("Time: %d, Node: %d\n", time[i].time, time[i].node_ID);
   }
+
   fprintf(ptr_out, "Total workload amount: %d", workload_total);
 
   fclose(ptr_out);
@@ -119,21 +122,15 @@ int main(void) {
 
 }
 
-int compare_time(const void *p1, const void *p2){
-  node *c1 = (node *)p1,
-       *c2 = (node *)p2;
+/* Function that compares the node speeds */
+int compare_time(const void *element1, const void *element2){
+  node *node1 = (node *)element1,
+       *node2 = (node *)element2;
   
-  if(c1->time > c2->time){
+  if(node1->time > node2->time){
     return -1;
   } else{
     return 1;
-  }
-}
-
-void restart_string(char *string, int n){
-  int i;
-  for(i = 0; i < n; i++){
-    string[i] = '\0';
   }
 }
 
@@ -155,6 +152,7 @@ void change_template(char *template, int number){
   template[i + 2] = (char)(number %  10                          + ASCII_A);
 }
 
+/* Checks if the called file exists */
 void check(FILE *pointer) {
   if(pointer == NULL) {
     printf("Error opening the file!");             
