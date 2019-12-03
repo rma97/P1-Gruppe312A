@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
   }
 
   /*Write node number and benchmark to output file */
-  fprintf(fp_writer, "Node: %c - Benchmark %s \n",argv[1][0], argv[2]);
+  fprintf(fp_writer, "Node: %s - Benchmark %s \n",argv[1], argv[2]);
   fprintf(fp_writer, "Time: ");
 
   /* Save file stream position for where run time is located */
