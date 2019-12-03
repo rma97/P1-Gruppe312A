@@ -194,7 +194,7 @@ void extract_info_from_temp_to_node_file(int num_nodes){
       /* set the string to only '\0's. */
       restart_string(one_line_from_temp, sizeof(one_line_from_temp)/sizeof(char));
       restart_string(one_work_load, sizeof(one_work_load)/sizeof(char));
-      /* Skal forklares */
+      /* Takes one line from the file. */
       fgets(one_line_from_temp, BIG_ENOUGH, fp_reader);
       pos_pointer = 0;
       /* converts a number into a string. With standard Math formating */
