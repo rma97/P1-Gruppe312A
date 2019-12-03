@@ -9,9 +9,10 @@
 void check(FILE *pointer);
 int random_gen(void);
 
+/* Makes the workload for the nodes */
 void generate_workload(void){
   int i, prime, random_number, num_input;
-  FILE *workload;
+  FILE *workload_ptr;
 
   /* Seeds the rand() with time */
   srand(time(NULL));
@@ -25,14 +26,16 @@ void generate_workload(void){
     printf("\n");
   }while((prime <= 0 || prime >= 1000000) && num_input < 1);
 
-  workload = fopen("workloads.txt", "w");
-  check(workload);
+  /* Opens the workload file in writing mode */
+  workload_ptr = fopen("workloads.txt", "w");
+  check(workload_ptr);
 
+  /* Generates a random number between 20 and 100 and writes it to workloads.txt */
   for (i = 1; i <= prime; i++){
     random_number = random_gen();
-    fprintf(workload, "%d ", random_number);
+    fprintf(workload_ptr, "%d ", random_number);
   }
-  fclose(workload);
+  fclose(workload_ptr);
 }
 
 /* Checks if the file is opened properly */
