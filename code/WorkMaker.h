@@ -18,7 +18,7 @@ void generate_workload(void){
 
   /* Runs until it's given a valid input */
   do{
-    printf("How many characters?: ");
+    printf("How many primes?: ");
     num_input = scanf(" %d", &prime);
     /* Eats everyting after the first number, and if there is no number, everything. */
     scanf("%*[^\n]");
