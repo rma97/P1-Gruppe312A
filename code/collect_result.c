@@ -94,9 +94,7 @@ int main(void) {
     fclose(ptr_task); 
 
     /* After everything important from the file is retrieved, it is deleted. */
-    if (remove(file_string_tasks) == 0){
-      delete_count++;
-    }
+    (remove(file_string_tasks)
   }
 
   /* After the runtime of each node is stored, it is sorted so they're ordered by speed */
