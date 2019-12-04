@@ -63,8 +63,23 @@ int main(void){
         exit(EXIT_FAILURE);
       }
 
-      /* Generates a random benchmark weight between 1-5 */
-      generate_benchmarks(benchmarks, num_nodes);
+      new_nodes = ' ';
+      do{
+        /* Generates a random benchmark weight between 1-5 */
+        generate_benchmarks(benchmarks, num_nodes);
+        /* This just tells the user the specification on each node. */
+        for(i = 0; i < num_nodes; i++){
+          printf("This is node nr. %2d it has the benchmark %d\n", i + 1, benchmarks[i]);
+        }
+	printf("\n");
+	do{
+          printf("Are these benchmarks acceptable to you?[Y/N] - ");
+	  scanf(" %c", &new_nodes);
+	  scanf("%*[^\n]");
+	}while(!valid_boolean_input(new_nodes));
+        printf("\n");
+      }while(new_nodes == 'n' || new_nodes == 'N');
+      
       fp_non = fopen("number_of_nodes.txt", "w");
       fprintf(fp_non, "%d\n", num_nodes);
       for(i = 0; i < num_nodes; i++){
@@ -72,7 +87,6 @@ int main(void){
       }
       fclose(fp_non);
     }
-    printf("\n");
 
     new_data = ' ';
     if(!virgin){
@@ -97,12 +111,6 @@ int main(void){
       printf("Couldn't open one of the files.");
       exit(EXIT_FAILURE);
     }
-
-    /* This just tells the user the specification on each node. */
-    for(i = 0; i < num_nodes; i++){
-      printf("This is node nr. %2d it has the benchmark %d\n", i + 1, benchmarks[i]);
-    }
-    printf("\n");
 
     /* Ask the user which algorithm to use. */
     while(1 == 1){
@@ -283,10 +291,10 @@ void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int
     i = 0;
     while(string_from_file[i] != '\0'){
       /* If the current character isn't a space, the end of the string or a new line. Give the character to the next node. */
-      if(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n')
+      if(string_from_file[i] != ' ' && string_from_file[i] != '\n')
         fprintf(fp_writer, "\\%d ", counter_node + 1);
       /* Keeps giving the next character to the last node, untill it hits either a space, end of string or new line.  */
-      while(string_from_file[i] != ' ' && string_from_file[i] != '\0' && string_from_file[i] != '\n'){
+      while(string_from_file[i] != ' ' && string_from_file[i] != '\n'){
 	fprintf(fp_writer, "%c", string_from_file[i]);
         ch_this_line++;
 	i++;
