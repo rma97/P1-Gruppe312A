@@ -85,9 +85,8 @@ int find_number(char *string, int length_string){
 
 /* returns nth prime */
 int find_prime(int n) {
-  int i, j;
-  int last = 0;
-  for (i = 0; i < n; i++) {
+  int i, last;
+  for (i = 0, last = 0; i < n; i++) {
     last++;
     while (!is_prime(last)) last++;
   }
@@ -97,8 +96,7 @@ int find_prime(int n) {
 /* checks if number is a prime, returns 1 if it is */ 
 int is_prime(int number) {
   int i, bool;
-  bool = 0;
-  for (i = number/2; (i > 0) && (number % i != 0); i--);
+  for (i = number/2, bool = 0; (i > 0) && (number % i != 0); i--);
   if (i == 1) bool = 1;
   return bool;
 }
