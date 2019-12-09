@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 #define MAX_CHARS 10000
-#define ASCII_A 48
+#define ASCII_0 48
 
 struct node{
   int time;
