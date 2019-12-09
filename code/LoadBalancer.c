@@ -279,7 +279,7 @@ void round_robin(FILE *fp_reader, FILE *fp_writer, int num_nodes){
 
 void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int num_nodes){
   /* This prints to the file temp, with standard '\[node nr.] [character]' and making sure the charcters per line doesn't exceed 15. */
-  int ch_this_line = 0, counter_bench = 0, counter_node = 0, i; 
+  int ch_this_line = 0, counter_bench = 0, counter_node = 0, i, ran = 0; 
   char ch, string_from_file[BIG_ENOUGH];
   /* First checks if the next character in the loop is the end of the file. Else run (again).*/
   while((ch = getc(fp_reader)) != EOF){
@@ -291,16 +291,21 @@ void weighted_round_robin(FILE *fp_reader, FILE *fp_writer, int *benchmarks, int
     i = 0;
     while(string_from_file[i] != '\0'){
       /* If the current character isn't a space, the end of the string or a new line. Give the character to the next node. */
-      if(string_from_file[i] != ' ' && string_from_file[i] != '\n')
+      if(string_from_file[i] != ' ' && string_from_file[i] != '\n'){
+	ran = 1;
         fprintf(fp_writer, "\\%d ", counter_node + 1);
+      }
       /* Keeps giving the next character to the last node, untill it hits either a space, end of string or new line.  */
-      while(string_from_file[i] != ' ' && string_from_file[i] != '\n'){
+      while(string_from_file[i] != ' ' && string_from_file[i] != '\n' && string_from_file[i] != '\0'){
 	fprintf(fp_writer, "%c", string_from_file[i]);
         ch_this_line++;
 	i++;
       }
       /* makes it such that when a specific node has recived as many tasks as its bencmark it goes to the next node. */
-      counter_bench++;
+      if(ran == 1){
+        counter_bench++;
+	ran = 0;
+      }
       if(counter_bench >= benchmarks[counter_node]){
         counter_bench = 0;
         counter_node = (counter_node + 1) % num_nodes;
