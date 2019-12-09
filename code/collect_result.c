@@ -143,11 +143,11 @@ void change_template(char *template, int number){
     i++;
   }
   /* This is the 100th spot, so for each time we can divide the number with 100. */
-  template[i]     = (char)((number / 100)                        + ASCII_A);
+  template[i]     = (char)((number / 100)                        + ASCII_0);
   /* This is the  10th spot, so that is the remaning of dividing with 100 minus the reaming divided by 10. divided with 10. */
-  template[i + 1] = (char)((((number % 100) - number % 10) / 10) + ASCII_A);
+  template[i + 1] = (char)((((number % 100) - number % 10) / 10) + ASCII_0);
   /* this is the   1th spot, and is just the remaning after dividing by 10. */
-  template[i + 2] = (char)(number %  10                          + ASCII_A);
+  template[i + 2] = (char)(number %  10                          + ASCII_0);
 }
 
 /* Checks if the called file exists */
