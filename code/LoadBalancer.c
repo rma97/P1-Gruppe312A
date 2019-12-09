@@ -5,7 +5,7 @@
 #include "WorkMaker.h"
 
 /* BIG_ENOUGH is the maximum length, we accept for a string. 
- * ASCII_A is the number which 0 is in ASCII alphabet, used to converting numbers.
+ * ASCII_0 is the number which 0 is in ASCII alphabet, used to converting numbers.
  * CH_PER_LINE_IN_TEMP is the number of characters we want per line in our temp file. */
 #define BIG_ENOUGH 1000
 #define ASCII_0 48
@@ -392,11 +392,11 @@ void change_template(char *template, int number){
     i++;
   }
   /* This is the 100th spot, so for each time we can divide the number with 100. */
-  template[i]     = (char)((number / 100)                        + ASCII_A);
+  template[i]     = (char)((number / 100)                        + ASCII_0);
   /* This is the  10th spot, so that is the remaning of dividing with 100 minus the reaming divided by 10. divided with 10. */
-  template[i + 1] = (char)((((number % 100) - number % 10) / 10) + ASCII_A);
+  template[i + 1] = (char)((((number % 100) - number % 10) / 10) + ASCII_0);
   /* this is the   1th spot, and is just the remaning after dividing by 10. */
-  template[i + 2] = (char)(number %  10                          + ASCII_A);
+  template[i + 2] = (char)(number %  10                          + ASCII_0);
 }
 
 /* This function changes a 3 decimales int to a string, with so weird math. */
@@ -404,20 +404,20 @@ void set_number_to_string(int number, char *string){
   int j = 0;
   /* The first if statemant checks if there is a value in the a hundred place. */
   if(number / 100 != 0)
-    string[j++] = (char)(number / 100 + ASCII_A);
+    string[j++] = (char)(number / 100 + ASCII_0);
   
   /* This both check if there is a value greater than 0 in the 10th place, and if there hsa been an 100th. */
   if(((number / 10 - (number / 100) * 10)  != 0) && number / 100 == 0)
-    string[j++] = (char)(number /  10 + ASCII_A);
+    string[j++] = (char)(number /  10 + ASCII_0);
   else if(((number / 10 - (number / 100) * 10) == 0) && (number / 100 != 0))
-    string[j++] = (char)(ASCII_A);
+    string[j++] = (char)(ASCII_0);
   
   /* The last else statement could be left out, but it given a closer look into whats happening. 
    * Which is, that the number on the 1th place i printed no matter what. */
   if((number - number / 10) != 0)
-    string[j++] = (char)(number % 10 + ASCII_A);
+    string[j++] = (char)(number % 10 + ASCII_0);
   else
-    string[j++] = (char)(ASCII_A);
+    string[j++] = (char)(ASCII_0);
   string[j] = '\0';
 }
 
