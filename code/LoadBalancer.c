@@ -8,7 +8,7 @@
  * ASCII_A is the number which 0 is in ASCII alphabet, used to converting numbers.
  * CH_PER_LINE_IN_TEMP is the number of characters we want per line in our temp file. */
 #define BIG_ENOUGH 1000
-#define ASCII_A 48
+#define ASCII_0 48
 #define CH_PER_LINE_IN_TEMP 30
 
 void generate_benchmarks(int *benchmarks, int n);
