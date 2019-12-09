@@ -95,8 +95,7 @@ int find_prime(int n) {
 
 /* checks if number is a prime, returns 1 if it is */ 
 int is_prime(int number) {
-  int i, bool;
-  for (i = number/2, bool = 0; (i > 0) && (number % i != 0); i--);
-  if (i == 1) bool = 1;
-  return bool;
+  int i;
+  for (i = number/2; (i > 0) && (number % i != 0); i--);
+  return (i == 1);
 }
