@@ -158,6 +158,9 @@ void start_the_nodes(int num_nodes, int *benchmarks){
 
   /* It start each node seperatly, therefore this loop runs n number of times where n is the number of nodes. */
   for(i = 1; i <= num_nodes; i++){
+    strcpy(tasks_template, "tasks000.txt");
+    strcpy(workload_template, "workload000.txt");
+    
     /* Changes the two templates, workload000.txt and tasks000.txt */
     change_template(tasks_template, i);
     change_template(workload_template, i);
@@ -182,6 +185,8 @@ void extract_info_from_temp_to_node_file(int num_nodes){
 
   /* Runs once for each node. */
   for(i = 1; i <= num_nodes; ++i){
+    strcpy(workload_template, "workload000.txt");
+
     /* Sets fp_reader to be in the beginning of the file. */
     rewind(fp_reader);
     /* Sets the num for character per file, to 0. mostly for debugging. */
@@ -404,7 +409,7 @@ void set_number_to_string(int number, char *string){
   int j = 0;
   /* The first if statemant checks if there is a value in the a hundred place. */
   if(number / 100 != 0)
-    string[j++] = (char)(number / 100 + ASCII_0);
+    string[j++] = (char)((number / 100) + ASCII_0);
   
   /* This both check if there is a value greater than 0 in the 10th place, and if there hsa been an 100th. */
   if(((number / 10 - (number / 100) * 10)  != 0) && number / 100 == 0)

@@ -55,6 +55,9 @@ int main(void) {
   /* printf("Combines the following files to Output.txt\n"); */
 
   for(i = 1; i <= number_of_nodes; ++i) {
+    strcpy(file_string_tasks, "tasks000.txt");
+    strcpy(file_string_workload, "workload000.txt");
+    
     change_template(file_string_tasks, i);
     workload_individual = 0;
 
@@ -112,6 +115,9 @@ int main(void) {
   fclose(ptr_out);
 
   for(i = 1; i <= number_of_nodes; ++i){
+    strcpy(file_string_tasks, "tasks000.txt");
+    strcpy(file_string_workload, "workload000.txt");
+    
     change_template(file_string_workload, i);
     remove(file_string_workload);
   }
