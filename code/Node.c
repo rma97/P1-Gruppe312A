@@ -54,7 +54,7 @@ int main(int argc, char *argv[]){
     Sleep((int) (((double) 1/benchmark)*TIME_MULTIPLY));
     /* load and find current prime */
     fscanf(fp_reader," %d ",&temp);
-    printf("finding prime %d: ",temp);
+    /*printf("finding prime %d: ",temp); */
     temp = find_prime(temp);
     /* output the found prime to output and file */
     printf("%d\n",temp);
