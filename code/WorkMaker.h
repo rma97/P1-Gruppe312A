@@ -47,5 +47,5 @@ void check(FILE *pointer){
 
 /* Gets a random number between PRIME_MIN and PRIME_MAX */
 int random_gen(void){
-    return (rand() % (PRIME_MAX - PRIME_MIN)) + 20;
+    return (rand() % (PRIME_MAX - PRIME_MIN + 1)) + PRIME_MIN;
 }
