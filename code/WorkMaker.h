@@ -11,7 +11,7 @@ int random_gen(void);
 
 /* Makes the workload for the nodes */
 void generate_workload(void){
-  int i, prime, random_number, num_input;
+  int i, prime = 0, random_number, num_input;
   FILE *workload_ptr;
 
   /* Seeds the rand() with time */
@@ -24,7 +24,7 @@ void generate_workload(void){
     /* Eats everyting after the first number, and if there is no number, everything. */
     scanf("%*[^\n]");
     printf("\n");
-  }while((prime <= 0 || prime >= 1000000) && num_input < 1);
+  }while(prime <= 0 || prime >= 1000000);
 
   /* Opens the workload file in writing mode */
   workload_ptr = fopen("workloads.txt", "w");
